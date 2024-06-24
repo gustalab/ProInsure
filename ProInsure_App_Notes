@@ -1,0 +1,39 @@
+
+
+1. Editable table için FUNCTIONS & TABLES bölümünü kontrol et.
+
+2. Themes eklenebilir...
+ # CSS & JS ----
+      # shinythemes::themeSelector(),
+      # theme = shinytheme("spacelab"),
+      # theme = shinytheme("cyborg"),
+
+3. 
+
+wellPanel(
+textAreaInput(inputId = "y", label = "Sonuçlar",)
+),
+
+4.
+          box(
+            
+            #Valid colors are: red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, orange, fuchsia, purple, maroon, black.
+            title = "Title 6", width = NULL, background = "black", status = "warning",
+            "A box with a solid maroon background",
+            )
+            
+            
+5. 
+
+        
+        hr(),
+
+        menuItem("Maluliyet", tabName = "maluliyet", icon = icon("dashboard")),
+        menuSubItem("Maluliyet2", tabName = "maluliyet2"),
+        
+
+        hr(),
+
+        
+        menuItem("Destek", tabName = "destek", icon = icon("th"),
+                 badgeLabel = "Yakında", badgeColor = "green"),
