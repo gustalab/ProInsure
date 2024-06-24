@@ -31,8 +31,8 @@ library(ggplot2)
 #install.packages("ggExtra")
 library(ggExtra)
 
-library(hrbrthemes)
-library(viridis)
+# library(hrbrthemes)
+# library(viridis)
 
 library(highcharter) #interactive visualization
 
