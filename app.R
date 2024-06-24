@@ -982,14 +982,6 @@ server <- function(input, output,session) {
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
   ### 4.2.4 RENDER UI ----
   
   output$web_page <- renderUI({
