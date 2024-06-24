@@ -129,13 +129,13 @@ load_data <- function(file) {
       user_name = character(),
       DosyaNo = character(),
       Cinsiyet = character(),
-      DoğumTarihi = character(),
+      DogumTarihi = character(),
       Gelir = character(),
       KazaTarihi = character(),
       MaluliyetOran = numeric(),
       KusurOran = numeric(),
       GeciciMaluliyetSure = numeric(),
-      KısmiOdemeSay = numeric(),
+      KismiOdemeSay = numeric(),
       Duration = numeric(),
       stringsAsFactors = FALSE
     )
@@ -248,13 +248,13 @@ server <- function(input, output,session) {
       user_name = isolate(user_data()$user_name),  # isolate to prevent reactivity
       DosyaNo = input$dosya,
       Cinsiyet = input$cinsiyet,
-      DoğumTarihi =  as.character(input$dogumtarihi),
+      DogumTarihi =  as.character(input$dogumtarihi),
       Gelir =  input$gelir,
       KazaTarihi = as.character(input$kazatarihi),
       MaluliyetOran = input$maluliyet,
       KusurOran = input$kusur,
       GeciciMaluliyetSure =input$maluliyet_sure,
-      KısmiOdemeSay = input$kısmiodeme,
+      KismiOdemeSay = input$kısmiodeme,
       Duration = duration,
       EntryTime = as.character(Sys.time()) # Add system date and time when the user entered the app
     )
