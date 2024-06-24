@@ -5,7 +5,7 @@ account: gustalab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12225118
-bundleId: 8780205
+bundleId: 8780242
 url: https://gustalab.shinyapps.io/ProInsure/
 version: 1
 asMultiple: FALSE
