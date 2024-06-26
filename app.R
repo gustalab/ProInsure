@@ -136,6 +136,7 @@ load_data <- function(file) {
       KusurOran = numeric(),
       GeciciMaluliyetSure = numeric(),
       KismiOdemeSay = numeric(),
+      RaporTur = character(),
       Duration = numeric(),
       stringsAsFactors = FALSE
     )
@@ -189,11 +190,11 @@ ui <-  tagList(
 server <- function(input, output,session) {
   
   ### 4.2.1 USER CREDENTIALS ----
-
+  
   user_base_tbl <- tibble(user_name = c("user1", "user2", "user3"),
                           password = c("pass1", "pass2", "pass3")
   )
-
+  
   ### 3.2.2 SHINYAUTHR ----
   
   credentials <- shinyauthr::loginServer(
@@ -224,7 +225,7 @@ server <- function(input, output,session) {
   ### 4.2.3 SERVER FUNCs ----
   
   #### Save and Load Data ----
-
+  
   # ReactiveValues object to store the accumulated data
   values <- reactiveValues(data = load_data(data_file))
   
@@ -236,8 +237,10 @@ server <- function(input, output,session) {
   show_download_button <- reactiveVal(FALSE)
   
   # Observe event for the submit button
+  
+  ## NOT: Burada data save durumunu Submit butonuna bağlaandı. Action button türünde olduğu için. Generate Report butonu downloadbutton türünde olduğu için trigger edemedim. Yapılabilirse Submit butonu kaldırılıp direk generate_report üzerinden save edilebilir.
   observeEvent(input$submit, {
-    
+  # observeEvent(input$generate_report, {  
     # Calculate duration in minutes
     duration <- as.numeric(round(difftime(Sys.time(), values$start_time, units = "mins"), digits = 2))
     
@@ -246,7 +249,7 @@ server <- function(input, output,session) {
       
       ID = generate_id(),
       user_name = isolate(user_data()$user_name),  # isolate to prevent reactivity
-      DosyaNo = input$dosya,
+      DosyaNo = ifelse(input$dosya == TRUE,input$dosya,"-"),
       Cinsiyet = input$cinsiyet,
       DogumTarihi =  as.character(input$dogumtarihi),
       Gelir =  input$gelir,
@@ -255,6 +258,7 @@ server <- function(input, output,session) {
       KusurOran = input$kusur,
       GeciciMaluliyetSure =input$maluliyet_sure,
       KismiOdemeSay = input$kısmiodeme,
+      RaporTur = input$rapor,
       Duration = duration,
       EntryTime = as.character(Sys.time()) # Add system date and time when the user entered the app
     )
@@ -270,8 +274,8 @@ server <- function(input, output,session) {
     # show_download_button(TRUE)
     
     # Show a notification
-    showNotification("Data submitted successfully!", type = "message")
-
+    # showNotification("Data submitted successfully!", type = "message")
+    
   })
   
   # Render the data table in the UI
@@ -337,9 +341,9 @@ server <- function(input, output,session) {
             PDogum_Tarihi = input$dogumtarihi,
             PKismi_Odeme_Sayisi = input$kısmiodeme,
             PKismi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
-            PKismi_Odeme_Tutari_1 = input$kö1,
+            PKismi_Odeme_Tutari_1 = input$ko1,
             # PKısmi_Odeme_Tarihi_2 = input$kısmiodemetarihi2,
-            # PKısmi_Odeme_Tutarı_2 = input$kö2,
+            # PKısmi_Odeme_Tutarı_2 = input$ko2,
             PGecici_Maluliyet_Sure = input$maluliyet_sure,
             PBakici = input$bakici_gider,
             PBakici_Sure = input$bakici_sure,
@@ -364,11 +368,11 @@ server <- function(input, output,session) {
             PDogum_Tarihi = input$dogumtarihi,
             PKismi_Odeme_Sayisi = input$kısmiodeme,
             PKismi_Odeme_Tarihi_1 = input$kısmiodemetarihi2,
-            PKismi_Odeme_Tutari_1 = input$kö2,
+            PKismi_Odeme_Tutari_1 = input$ko2,
             # PKısmi_Odeme_Tarihi_2 = input$kısmiodemetarihi2,
-            # PKısmi_Odeme_Tutarı_2 = input$kö2,
+            # PKısmi_Odeme_Tutarı_2 = input$ko2,
             PKismi_Odeme_Tarihi_2 = input$kısmiodemetarihi3,
-            PKismi_Odeme_Tutarı_2 = input$kö3,
+            PKismi_Odeme_Tutarı_2 = input$ko3,
             PGecici_Maluliyet_Sure = input$maluliyet_sure,
             PBakici = input$bakici_gider,
             PBakici_Sure = input$bakici_sure,
@@ -477,9 +481,9 @@ server <- function(input, output,session) {
             PDogum_Tarihi = input$dogumtarihi,
             PKismi_Odeme_Sayisi = input$kısmiodeme,
             PKismi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
-            PKismi_Odeme_Tutari_1 = input$kö1,
+            PKismi_Odeme_Tutari_1 = input$ko1,
             # PKısmi_Odeme_Tarihi_2 = input$kısmiodemetarihi2,
-            # PKısmi_Odeme_Tutarı_2 = input$kö2,
+            # PKısmi_Odeme_Tutarı_2 = input$ko2,
             PGecici_Maluliyet_Sure = input$maluliyet_sure,
             PBakici = input$bakici_gider,
             PBakici_Sure = input$bakici_sure,
@@ -503,7 +507,7 @@ server <- function(input, output,session) {
             PDogum_Tarihi = input$dogumtarihi,
             PKısmi_Odeme_Sayisi = input$kısmiodeme,
             PKısmi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
-            PKısmi_Odeme_Tutarı_1 = input$kö1,
+            PKısmi_Odeme_Tutarı_1 = input$ko1,
             PGelir = input$asgari_durum,
             PYasam_Tablosu = input$tablo2,
             PEs = input$es,
@@ -530,7 +534,7 @@ server <- function(input, output,session) {
         )
         file.rename(res, file)
       }
-
+      
     }
   )
   
@@ -627,19 +631,19 @@ server <- function(input, output,session) {
   
   sliderValues <- reactive({
     
-    köt1 <- ifelse(as.character(input$kısmiodemetarihi1) == Sys.Date(),"-",as.character(input$kısmiodemetarihi1))
-    köt2 <- ifelse(as.character(input$kısmiodemetarihi2) == Sys.Date(),"-",as.character(input$kısmiodemetarihi2))
-    köt3 <- ifelse(as.character(input$kısmiodemetarihi3) == Sys.Date(),"-",as.character(input$kısmiodemetarihi3))
-    köt4 <- ifelse(as.character(input$kısmiodemetarihi4) == Sys.Date(),"-",as.character(input$kısmiodemetarihi4))
-    köt5 <- ifelse(as.character(input$kısmiodemetarihi5) == Sys.Date(),"-",as.character(input$kısmiodemetarihi5))
-    köt6 <- ifelse(as.character(input$kısmiodemetarihi6) == Sys.Date(),"-",as.character(input$kısmiodemetarihi6))
+    kot1 <- ifelse(as.character(input$kısmiodemetarihi1) == Sys.Date(),"-",as.character(input$kısmiodemetarihi1))
+    kot2 <- ifelse(as.character(input$kısmiodemetarihi2) == Sys.Date(),"-",as.character(input$kısmiodemetarihi2))
+    kot3 <- ifelse(as.character(input$kısmiodemetarihi3) == Sys.Date(),"-",as.character(input$kısmiodemetarihi3))
+    kot4 <- ifelse(as.character(input$kısmiodemetarihi4) == Sys.Date(),"-",as.character(input$kısmiodemetarihi4))
+    kot5 <- ifelse(as.character(input$kısmiodemetarihi5) == Sys.Date(),"-",as.character(input$kısmiodemetarihi5))
+    kot6 <- ifelse(as.character(input$kısmiodemetarihi6) == Sys.Date(),"-",as.character(input$kısmiodemetarihi6))
     
-    # köt1 <- ifelse(as.Date(input$kısmiodemetarihi1) == Sys.Date(),"-",as.character(input$kısmiodemetarihi1))
-    # köt2 <- ifelse(as.Date(input$kısmiodemetarihi2) == Sys.Date(),"-",as.character(input$kısmiodemetarihi2))
-    # köt3 <- ifelse(as.Date(input$kısmiodemetarihi3) == Sys.Date(),"-",as.character(input$kısmiodemetarihi3))
-    # köt4 <- ifelse(as.Date(input$kısmiodemetarihi4) == Sys.Date(),"-",as.character(input$kısmiodemetarihi4))
-    # köt5 <- ifelse(as.Date(input$kısmiodemetarihi5) == Sys.Date(),"-",as.character(input$kısmiodemetarihi5))
-    # köt6 <- ifelse(as.Date(input$kısmiodemetarihi6) == Sys.Date(),"-",as.character(input$kısmiodemetarihi6))
+    # kot1 <- ifelse(as.Date(input$kısmiodemetarihi1) == Sys.Date(),"-",as.character(input$kısmiodemetarihi1))
+    # kot2 <- ifelse(as.Date(input$kısmiodemetarihi2) == Sys.Date(),"-",as.character(input$kısmiodemetarihi2))
+    # kot3 <- ifelse(as.Date(input$kısmiodemetarihi3) == Sys.Date(),"-",as.character(input$kısmiodemetarihi3))
+    # kot4 <- ifelse(as.Date(input$kısmiodemetarihi4) == Sys.Date(),"-",as.character(input$kısmiodemetarihi4))
+    # kot5 <- ifelse(as.Date(input$kısmiodemetarihi5) == Sys.Date(),"-",as.character(input$kısmiodemetarihi5))
+    # kot6 <- ifelse(as.Date(input$kısmiodemetarihi6) == Sys.Date(),"-",as.character(input$kısmiodemetarihi6))
     
     excel_data <- if(input$kısmiodeme == '1' & input$gelir == "Asgari ücret") {
       
@@ -672,8 +676,8 @@ server <- function(input, output,session) {
                   input$maluliyet_sure,
                   input$bakici_sure,
                   input$kısmiodeme,
-                  köt1,
-                  input$kö1
+                  kot1,
+                  input$ko1
         )
       )
     } 
@@ -711,10 +715,10 @@ server <- function(input, output,session) {
                   input$maluliyet_sure,
                   input$bakici_sure,
                   input$kısmiodeme,
-                  köt2,
-                  input$kö2,
-                  köt3,
-                  input$kö3
+                  kot2,
+                  input$ko2,
+                  kot3,
+                  input$ko3
         )
       )
     } 
@@ -753,12 +757,12 @@ server <- function(input, output,session) {
                   input$maluliyet_sure,
                   input$bakici_sure,
                   input$kısmiodeme,
-                  köt4,
-                  input$kö4,
-                  köt5,
-                  input$kö5,
-                  köt6,
-                  input$kö6
+                  kot4,
+                  input$ko4,
+                  kot5,
+                  input$ko5,
+                  kot6,
+                  input$ko6
         )
       )
     }
@@ -793,8 +797,8 @@ server <- function(input, output,session) {
                   input$kusur,
                   input$maluliyet_sure,
                   input$kısmiodeme,
-                  köt1,
-                  input$kö1
+                  kot1,
+                  input$ko1
         )
       )
     }
@@ -832,10 +836,10 @@ server <- function(input, output,session) {
                   input$kusur,
                   input$maluliyet_sure,
                   input$kısmiodeme,
-                  köt2,
-                  input$kö2,
-                  köt3,
-                  input$kö3
+                  kot2,
+                  input$ko2,
+                  kot3,
+                  input$ko3
         )
       )
     } 
@@ -872,12 +876,12 @@ server <- function(input, output,session) {
                   input$kusur,
                   input$maluliyet_sure,
                   input$kısmiodeme,
-                  köt4,
-                  input$kö4,
-                  köt5,
-                  input$kö5,
-                  köt6,
-                  input$kö6
+                  kot4,
+                  input$ko4,
+                  kot5,
+                  input$ko5,
+                  kot6,
+                  input$ko6
         )
       )
     }
@@ -985,21 +989,21 @@ server <- function(input, output,session) {
   ### 4.2.4 RENDER UI ----
   
   output$web_page <- renderUI({
-
+    
     req(user_auth()) 
     
-  #### dashboard page ----
+    #### dashboard page ----
     
     dashboardPage(
       
-
-   ##### dashboard header ----
-
+      
+      ##### dashboard header ----
+      
       dashboardHeader(
         title = tags$span("PROINSURE", style = "color: #ffffff;")
       ), 
       
-   ##### dashboard sidebar ----
+      ##### dashboard sidebar ----
       
       dashboardSidebar(
         
@@ -1010,7 +1014,7 @@ server <- function(input, output,session) {
           }
                ")
         ),
-
+        
         hr(),
         
         radioGroupButtons(
@@ -1080,576 +1084,576 @@ server <- function(input, output,session) {
         
         
       ), # dashboard sidebar end
-   
-   ##### dashboard body----
+      
+      ##### dashboard body----
       
       dashboardBody(
-
+        
         shinyjs::useShinyjs(),
         style = "background-color: #26224c;",
         
-            tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
-    ),
-    
-
-
+        tags$head(
+          tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+        ),
+        
+        
+        
         fluidRow(
           
-    ###### VERİ GİRİŞİ COL ----
-
-            column(
-              width = 6,
-              
-              h3("DOSYA BİLGİLERİ",style = "font-weight: solid; color: red;"),
-              
-              ###### *Genel Bilgiler ----
-              
-              box(status = "warning",
+          ###### VERİ GİRİŞİ COL ----
+          
+          column(
+            width = 6,
+            
+            h3("DOSYA BİLGİLERİ",style = "font-weight: solid; color: red;"),
+            
+            ###### *Genel Bilgiler ----
+            
+            box(status = "warning",
+                
+                column(
+                  width = 12,
                   
-                  column(
-                    width = 12,
+                  wellPanel(
+                    textInput(inputId = "dosya",label = "Dosya No", width = 250),
+                    textInput(inputId = "isim",label = "Ad-Soyad", width = 250),
                     
-                    wellPanel(
-                      textInput(inputId = "dosya",label = "Dosya No", width = 250),
-                      textInput(inputId = "isim",label = "Ad-Soyad", width = 250),
-                      
-                      br(),
-                      p(tags$b("Kaza Tarihi")),
-                      dateInput("kazatarihi", label = NULL),
-                      p(tags$b("Kusur Oranı")),
-                      sliderInput("kusur", label = NULL, min = 0, 
-                                  max = 100, value = 50,step = 5),
+                    br(),
+                    p(tags$b("Kaza Tarihi")),
+                    dateInput("kazatarihi", label = NULL),
+                    p(tags$b("Kusur Oranı")),
+                    sliderInput("kusur", label = NULL, min = 0, 
+                                max = 100, value = 50,step = 5),
+                  ),
+                ),
+                
+                column(
+                  width = 12,
+                  
+                  wellPanel(
+                    
+                    prettyRadioButtons(
+                      inputId = "cinsiyet",
+                      label = "Cinsiyet", 
+                      choices = c("Erkek", "Kadın"),
+                      icon = icon("check"), 
+                      bigger = TRUE,
+                      status = "warning",
+                      animation = "jelly", selected = "Erkek", fill = FALSE, inline = TRUE
                     ),
-                  ),
-                  
-                  column(
-                    width = 12,
                     
-                    wellPanel(
+                    p(tags$b("Doğum Tarihi")),
+                    dateInput("dogumtarihi", label = NULL),
+                    
+                    p(tags$b("Maluliyet Oranı")),
+                    # sliderInput("maluliyet", label = NULL, min = 0, 
+                    # max = 100, value = 50,step = 1),
+                    numericInputIcon(
+                      inputId = "maluliyet", 
+                      label = NULL, value =0, 
+                      step= 0.1, min=0, max=100,icon=icon("calender")),
+                    
+                    p(tags$b("Geçici Maluliyet (Ay)")),
+                    awesomeRadio("gecici_maluliyet", label = NULL,
+                                 choices = c("Var", "Yok"),
+                                 selected = "Yok", inline=TRUE, checkbox = TRUE),
+                    conditionalPanel(
+                      condition = "input.gecici_maluliyet == 'Var'",
                       
-                      prettyRadioButtons(
-                        inputId = "cinsiyet",
-                        label = "Cinsiyet", 
-                        choices = c("Erkek", "Kadın"),
-                        icon = icon("check"), 
-                        bigger = TRUE,
-                        status = "warning",
-                        animation = "jelly", selected = "Erkek", fill = FALSE, inline = TRUE
-                      ),
-                      
-                      p(tags$b("Doğum Tarihi")),
-                      dateInput("dogumtarihi", label = NULL),
-                      
-                      p(tags$b("Maluliyet Oranı")),
-                      # sliderInput("maluliyet", label = NULL, min = 0, 
-                      # max = 100, value = 50,step = 1),
                       numericInputIcon(
-                        inputId = "maluliyet", 
-                        label = NULL, value =0, 
-                        step= 0.1, min=0, max=100,icon=icon("calender")),
-                      
-                      p(tags$b("Geçici Maluliyet (Ay)")),
-                      awesomeRadio("gecici_maluliyet", label = NULL,
-                                   choices = c("Var", "Yok"),
-                                   selected = "Yok", inline=TRUE, checkbox = TRUE),
-                      conditionalPanel(
-                        condition = "input.gecici_maluliyet == 'Var'",
-                        
-                        numericInputIcon(
-                          inputId = "maluliyet_sure",
-                          label = NULL,
-                          value = 0, step = 0.1,
-                          min = 0, max = 120,
-                          icon = icon("calendar")
-                        )
+                        inputId = "maluliyet_sure",
+                        label = NULL,
+                        value = 0, step = 0.1,
+                        min = 0, max = 120,
+                        icon = icon("calendar")
                       )
                     )
-                    
-                  ),
+                  )
                   
-                  ###### *Şirket Ödemeleri ----
-                  column(
-                    width = 12,
+                ),
+                
+                ###### *Şirket Ödemeleri ----
+                column(
+                  width = 12,
+                  
+                  wellPanel(
+                    p(tags$b("Şirket Ödemeleri", style = "font-weight: bold; color: red;")),
                     
-                    wellPanel(
-                      p(tags$b("Şirket Ödemeleri", style = "font-weight: bold; color: red;")),
+                    p(tags$b("Kısmi Ödeme Sayısı")),
+                    numericInput("kısmiodeme", label = NULL, value = 0, min = 0, max = 3),
+                    
+                    conditionalPanel(
+                      condition = "input.kısmiodeme == '1'",
                       
-                      p(tags$b("Kısmi Ödeme Sayısı")),
-                      numericInput("kısmiodeme", label = NULL, value = 0, min = 0, max = 3),
-                      
-                      conditionalPanel(
-                        condition = "input.kısmiodeme == '1'",
-                        
-                        dropdownButton(label = "Kısmi Ödeme Bilgileri",
-                                       
-                                       div( id = "1",
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-1")),
-                                              dateInput("kısmiodemetarihi1", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö1",
-                                                label = "Kısmi Ödeme Tutarı-1",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
+                      dropdownButton(label = "Kısmi Ödeme Bilgileri",
+                                     
+                                     div( id = "1",
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-1")),
+                                            dateInput("kısmiodemetarihi1", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko1",
+                                              label = "Kısmi Ödeme Tutarı-1",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
                                             )
-                                       ),
-                                       circle =FALSE, status = "danger",
-                                       icon = icon("turkish-lira-sign"), width = "300px"
-                        )
-                      ),
+                                          )
+                                     ),
+                                     circle =FALSE, status = "danger",
+                                     icon = icon("turkish-lira-sign"), width = "300px"
+                      )
+                    ),
+                    
+                    conditionalPanel(
+                      condition = "input.kısmiodeme == '2'",
                       
-                      conditionalPanel(
-                        condition = "input.kısmiodeme == '2'",
-                        
-                        
-                        dropdownButton(label = "Kısmi Ödeme Bilgileri",
-                                       
-                                       div( id = "2",
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-1")),
-                                              dateInput("kısmiodemetarihi2", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö2",
-                                                label = "Kısmi Ödeme Tutarı-1",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
-                                            ),
-                                            hr(),
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-2")),
-                                              dateInput("kısmiodemetarihi3", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö3",
-                                                label = "Kısmi Ödeme Tutarı-2",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
-                                            )
-                                            
-                                       ),
-                                       
-                                       circle =FALSE, status = "danger",
-                                       icon = icon("turkish-lira-sign"), width = "300px"
-                                       
-                        )
-                        
-                      ),
                       
-                      conditionalPanel(
-                        condition = "input.kısmiodeme == '3'",
-                        
-                        
-                        dropdownButton(label = "Kısmi Ödeme Bilgileri",
-                                       
-                                       div( id = "3",
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-1")),
-                                              dateInput("kısmiodemetarihi4", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö4",
-                                                label = "Kısmi Ödeme Tutarı-1",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
-                                            ),
-                                            hr(),
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-2")),
-                                              dateInput("kısmiodemetarihi5", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö5",
-                                                label = "Kısmi Ödeme Tutarı-2",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
-                                            ),
-                                            hr(),
-                                            wellPanel(
-                                              p(tags$b("Kısmi Ödeme Tarihi-3")),
-                                              dateInput("kısmiodemetarihi6", label = NULL),
-                                              numericInputIcon(
-                                                inputId = "kö6",
-                                                label = "Kısmi Ödeme Tutarı-3",
-                                                value = 0,
-                                                icon = list(icon("turkish-lira-sign"), ".00")
-                                              )
+                      dropdownButton(label = "Kısmi Ödeme Bilgileri",
+                                     
+                                     div( id = "2",
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-1")),
+                                            dateInput("kısmiodemetarihi2", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko2",
+                                              label = "Kısmi Ödeme Tutarı-1",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
                                             )
-                                            
-                                       ),
-                                       
-                                       circle =FALSE, status = "danger",
-                                       icon = icon("turkish-lira-sign"), width = "300px"
-                                       
-                        )
-                        
+                                          ),
+                                          hr(),
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-2")),
+                                            dateInput("kısmiodemetarihi3", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko3",
+                                              label = "Kısmi Ödeme Tutarı-2",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
+                                            )
+                                          )
+                                          
+                                     ),
+                                     
+                                     circle =FALSE, status = "danger",
+                                     icon = icon("turkish-lira-sign"), width = "300px"
+                                     
+                      )
+                      
+                    ),
+                    
+                    conditionalPanel(
+                      condition = "input.kısmiodeme == '3'",
+                      
+                      
+                      dropdownButton(label = "Kısmi Ödeme Bilgileri",
+                                     
+                                     div( id = "3",
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-1")),
+                                            dateInput("kısmiodemetarihi4", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko4",
+                                              label = "Kısmi Ödeme Tutarı-1",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
+                                            )
+                                          ),
+                                          hr(),
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-2")),
+                                            dateInput("kısmiodemetarihi5", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko5",
+                                              label = "Kısmi Ödeme Tutarı-2",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
+                                            )
+                                          ),
+                                          hr(),
+                                          wellPanel(
+                                            p(tags$b("Kısmi Ödeme Tarihi-3")),
+                                            dateInput("kısmiodemetarihi6", label = NULL),
+                                            numericInputIcon(
+                                              inputId = "ko6",
+                                              label = "Kısmi Ödeme Tutarı-3",
+                                              value = 0,
+                                              icon = list(icon("turkish-lira-sign"), ".00")
+                                            )
+                                          )
+                                          
+                                     ),
+                                     
+                                     circle =FALSE, status = "danger",
+                                     icon = icon("turkish-lira-sign"), width = "300px"
+                                     
                       )
                       
                     )
-                    
                     
                   )
                   
                   
+                )
+                
+                
+                
+            ),
+            
+            ###### * Diğer Bilgiler ----
+            
+            box(status = "warning", 
+                
+                "'Destekten Yoksun Kalma' hesaplamalarında kullanılacak bilgiler bu bölüme girilecektir. Ayrıca, kişinin gelir durumu asgari ücretten farklı ise gelir bilgisini giriniz!",
+                
+                br(),
+                br(),
+                br(),
+                hr(),
+                
+                column(
+                  width = 12,
                   
-              ),
-              
-              ###### * Diğer Bilgiler ----
-              
-              box(status = "warning", 
-                  
-                  "'Destekten Yoksun Kalma' hesaplamalarında kullanılacak bilgiler bu bölüme girilecektir. Ayrıca, kişinin gelir durumu asgari ücretten farklı ise gelir bilgisini giriniz!",
-                  
-                  br(),
-                  br(),
-                  br(),
-                  hr(),
+                  ####### ** Gelir Bilgisi ----
                   
                   column(
                     width = 12,
                     
-                    ####### ** Gelir Bilgisi ----
-                    
-                    column(
-                      width = 12,
-                      
-                      div(
-                        id = "gelir_bilgisi",
-                        actionButton(inputId = "action_button4", label = "Gelir Bilgisi", icon = icon("cog"))
-                      ),
-                      
-                      div(
-                        id="settings_toggle4",
-                        
-                        wellPanel(
-                          
-                          p(tags$b("Gelir Durumu", style = "font-weight: bold; color: red;")),
-                          awesomeRadio("gelir", label = NULL,
-                                       choices = c("Asgari ücret", "Diğer"),
-                                       inline=TRUE, checkbox = TRUE),
-                          
-                          
-                          conditionalPanel(
-                            condition = "input.gelir == 'Diğer'",
-                            
-                            modFunctionUI("editable"),
-                            h6("Ortalama Gelir", style = "font-weight: bold; color: black;"),
-                            verbatimTextOutput("ort_gelir")
-                            
-                          ),
-                          
-                          
-                          conditionalPanel(
-                            condition = "input.gelir == 'Asgari ücret'",
-                            
-                            awesomeRadio(
-                              inputId = "asgari_durum",
-                              label = "Durumu",
-                              choices = c("Bekar", "evli_cocuksuz", "1cocuk","2cocuk","3cocuk","4cocuk"),
-                              inline=FALSE, checkbox = TRUE)
-                            
-                            
-                          )
-                          
-                        )
-                        
-                      ) %>% hidden()
-                      
-                      
-                      
+                    div(
+                      id = "gelir_bilgisi",
+                      actionButton(inputId = "action_button4", label = "Gelir Bilgisi", icon = icon("cog"))
                     ),
                     
-                    
-                    br(),
-                    hr(),
-                    ####### ** Aile Bilgileri ----
-                    
-                    column(
-                      width = 12,
+                    div(
+                      id="settings_toggle4",
                       
-                      div(
-                        id = "aile_bilgiler",
-                        actionButton(inputId = "action_button3", label = "Aile Bilgileri", icon = icon("cog"))
-                      ),
-                      
-                      div(
-                        id="settings_toggle3",
+                      wellPanel(
                         
-                        wellPanel(
+                        p(tags$b("Gelir Durumu", style = "font-weight: bold; color: red;")),
+                        awesomeRadio("gelir", label = NULL,
+                                     choices = c("Asgari ücret", "Diğer"),
+                                     inline=TRUE, checkbox = TRUE),
+                        
+                        
+                        conditionalPanel(
+                          condition = "input.gelir == 'Diğer'",
                           
-                          p(tags$b("Aile Bilgileri", style = "font-weight: bold; color: red;")),
-                          ####### *** Eş ----
-                          div(
-                            p(tags$b("Eş")),
-                            awesomeRadio("es", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.es == 'Var'",
-                              
-                              textInput(inputId = "es_isim",label = "Eş Ad-Soyad", width = 250),
-                              
-                              dropdownButton(label = "Eş Doğum Tarihi",
-                                             
-                                             div( id = "1",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("esdogumtarihi", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            )
-                          ), 
-                          ####### *** Anne ----
-                          div(
-                            p(tags$b("Anne")),
-                            awesomeRadio("anne", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.anne == 'Var'",
-                              
-                              textInput(inputId = "anne_isim",label = "Anne Ad-Soyad", width = 250),
-                              
-                              dropdownButton(label = "Anne Doğum Tarihi",
-                                             
-                                             div( id = "1",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("annedogumtarihi", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            )
-                          ), 
-                          ####### *** Baba ----
-                          div(
-                            p(tags$b("Baba")),
-                            awesomeRadio("baba", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.baba == 'Var'",
-                              
-                              textInput(inputId = "baba_isim",label = "Baba Ad-Soyad", width = 250),
-                              
-                              
-                              dropdownButton(label = "Baba Doğum Tarihi",
-                                             
-                                             div( id = "1",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("babadogumtarihi", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            )
-                          ), 
+                          modFunctionUI("editable"),
+                          h6("Ortalama Gelir", style = "font-weight: bold; color: black;"),
+                          verbatimTextOutput("ort_gelir")
                           
-                          ####### *** Çocuk ----
-                          div(
-                            
-                            p(tags$b("1. Çocuk")),
-                            awesomeRadio("cocuk1", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.cocuk1 == 'Var'",
-                              
-                              textInput(inputId = "cocuk1_isim",label = "1.Çocuk Ad-Soyad", width = 250),
-                              
-                              
-                              dropdownButton(label = "1. Çocuk Doğum Tarihi",
-                                             
-                                             div( id = "1",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("cocukdogumtarihi11", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            ),
-                            
-                            
-                            p(tags$b("2. Çocuk")),
-                            awesomeRadio("cocuk2", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.cocuk2 == 'Var'",
-                              
-                              textInput(inputId = "cocuk2_isim",label = "2.Çocuk Ad-Soyad", width = 250),
-                              
-                              
-                              dropdownButton(label = "2. Çocuk Doğum Tarihi",
-                                             
-                                             div( id = "2",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("cocukdogumtarihi22", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            ),
-                            
-                            p(tags$b("3. Çocuk")),
-                            awesomeRadio("cocuk3", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.cocuk3 == 'Var'",
-                              
-                              textInput(inputId = "cocuk3_isim",label = "3.Çocuk Ad-Soyad", width = 250),
-                              
-                              dropdownButton(label = "3. Çocuk Doğum Tarihi",
-                                             
-                                             div( id = "3",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("cocukdogumtarihi33", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            ),
-                            
-                            
-                            p(tags$b("4. Çocuk")),
-                            awesomeRadio("cocuk4", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.cocuk4 == 'Var'",
-                              
-                              textInput(inputId = "cocuk4_isim",label = "4.Çocuk Ad-Soyad", width = 250),
-                              
-                              dropdownButton(label = "4. Çocuk Doğum Tarihi",
-                                             
-                                             div( id = "4",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("cocukdogumtarihi44", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            ),
-                            
-                            
-                            p(tags$b("5. Çocuk")),
-                            awesomeRadio("cocuk5", label = NULL,
-                                         choices = c("Var", "Yok"),
-                                         selected = "Yok", inline=TRUE, checkbox = TRUE),
-                            conditionalPanel(
-                              condition = "input.cocuk5 == 'Var'",
-                              
-                              textInput(inputId = "cocuk5_isim",label = "5.Çocuk Ad-Soyad", width = 250),
-                              
-                              dropdownButton(label = "5. Çocuk Doğum Tarihi",
-                                             
-                                             div( id = "5",
-                                                  wellPanel(
-                                                    p(tags$b("Doğum Tarihi")),
-                                                    dateInput("cocukdogumtarihi55", label = NULL)
-                                                  )
-                                             ),
-                                             circle =FALSE, status = "danger",
-                                             icon = icon("fa-thin fa-calendar"), width = "300px"
-                              )
-                            )
-                            
-                          )
+                        ),
+                        
+                        
+                        conditionalPanel(
+                          condition = "input.gelir == 'Asgari ücret'",
+                          
+                          awesomeRadio(
+                            inputId = "asgari_durum",
+                            label = "Durumu",
+                            choices = c("Bekar", "evli_cocuksuz", "1cocuk","2cocuk","3cocuk","4cocuk"),
+                            inline=FALSE, checkbox = TRUE)
+                          
                           
                         )
                         
-                        
-                        
-                        
-                        
-                      ) %>% hidden()
+                      )
                       
-                    ),
+                    ) %>% hidden()
                     
                     
                     
-                    br(),
-                    hr(),
-                    
-                    ####### ** Bakıcı Bilgisi ----
-                    
-                    column(
-                      width = 12,
-                      
-                      div(
-                        id = "bakici_bilgiler",
-                        actionButton(inputId = "action_button6", label = "Bakıcı Bilgisi", icon = icon("cog"))
-                      ),
-                      
-                      div(
-                        id="settings_toggle6",
-                        
-                        wellPanel(
-                          
-                          p(tags$b("Bakıcı Gideri", style = "font-weight: bold; color: red;")),
-                          awesomeRadio("bakici_gider", label = NULL,
-                                       choices = c("Var", "Yok"),
-                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
-                          
-                          p(tags$b("Bakıcı Tutuldu mu?", style = "font-weight: bold; color: red;")),
-                          awesomeRadio("bakici_tut", label = NULL,
-                                       choices = c("Evet", "Hayır"),
-                                       selected = "Hayır", inline=TRUE, checkbox = TRUE),
-                          p(tags$b("Bakıcı Gideri Süresi (Gün)")),
-                          conditionalPanel(
-                            condition = "input.bakici_gider == 'Var'",
-                            
-                            numericInputIcon(
-                              inputId = "bakici_sure",
-                              label = NULL,
-                              value = 0, step = 0.1,
-                              min = 0, max = 120,
-                              icon = icon("calendar")
-                            )
-                            
-                          )
-                          
-                        )
-                        
-                      ) %>% hidden()
-                      
-                    )
                   ),
                   
                   
-              )
-              
-              ###### * Diğer Bilgiler End ----
-
-              
-
-
-            ), # Veri girisi col end 
-    
-    
-    ###### SONUÇLAR COL ----
+                  br(),
+                  hr(),
+                  ####### ** Aile Bilgileri ----
+                  
+                  column(
+                    width = 12,
+                    
+                    div(
+                      id = "aile_bilgiler",
+                      actionButton(inputId = "action_button3", label = "Aile Bilgileri", icon = icon("cog"))
+                    ),
+                    
+                    div(
+                      id="settings_toggle3",
+                      
+                      wellPanel(
+                        
+                        p(tags$b("Aile Bilgileri", style = "font-weight: bold; color: red;")),
+                        ####### *** Eş ----
+                        div(
+                          p(tags$b("Eş")),
+                          awesomeRadio("es", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.es == 'Var'",
+                            
+                            textInput(inputId = "es_isim",label = "Eş Ad-Soyad", width = 250),
+                            
+                            dropdownButton(label = "Eş Doğum Tarihi",
+                                           
+                                           div( id = "1",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("esdogumtarihi", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          )
+                        ), 
+                        ####### *** Anne ----
+                        div(
+                          p(tags$b("Anne")),
+                          awesomeRadio("anne", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.anne == 'Var'",
+                            
+                            textInput(inputId = "anne_isim",label = "Anne Ad-Soyad", width = 250),
+                            
+                            dropdownButton(label = "Anne Doğum Tarihi",
+                                           
+                                           div( id = "1",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("annedogumtarihi", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          )
+                        ), 
+                        ####### *** Baba ----
+                        div(
+                          p(tags$b("Baba")),
+                          awesomeRadio("baba", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.baba == 'Var'",
+                            
+                            textInput(inputId = "baba_isim",label = "Baba Ad-Soyad", width = 250),
+                            
+                            
+                            dropdownButton(label = "Baba Doğum Tarihi",
+                                           
+                                           div( id = "1",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("babadogumtarihi", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          )
+                        ), 
+                        
+                        ####### *** Çocuk ----
+                        div(
+                          
+                          p(tags$b("1. Çocuk")),
+                          awesomeRadio("cocuk1", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.cocuk1 == 'Var'",
+                            
+                            textInput(inputId = "cocuk1_isim",label = "1.Çocuk Ad-Soyad", width = 250),
+                            
+                            
+                            dropdownButton(label = "1. Çocuk Doğum Tarihi",
+                                           
+                                           div( id = "1",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("cocukdogumtarihi11", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          ),
+                          
+                          
+                          p(tags$b("2. Çocuk")),
+                          awesomeRadio("cocuk2", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.cocuk2 == 'Var'",
+                            
+                            textInput(inputId = "cocuk2_isim",label = "2.Çocuk Ad-Soyad", width = 250),
+                            
+                            
+                            dropdownButton(label = "2. Çocuk Doğum Tarihi",
+                                           
+                                           div( id = "2",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("cocukdogumtarihi22", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          ),
+                          
+                          p(tags$b("3. Çocuk")),
+                          awesomeRadio("cocuk3", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.cocuk3 == 'Var'",
+                            
+                            textInput(inputId = "cocuk3_isim",label = "3.Çocuk Ad-Soyad", width = 250),
+                            
+                            dropdownButton(label = "3. Çocuk Doğum Tarihi",
+                                           
+                                           div( id = "3",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("cocukdogumtarihi33", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          ),
+                          
+                          
+                          p(tags$b("4. Çocuk")),
+                          awesomeRadio("cocuk4", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.cocuk4 == 'Var'",
+                            
+                            textInput(inputId = "cocuk4_isim",label = "4.Çocuk Ad-Soyad", width = 250),
+                            
+                            dropdownButton(label = "4. Çocuk Doğum Tarihi",
+                                           
+                                           div( id = "4",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("cocukdogumtarihi44", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          ),
+                          
+                          
+                          p(tags$b("5. Çocuk")),
+                          awesomeRadio("cocuk5", label = NULL,
+                                       choices = c("Var", "Yok"),
+                                       selected = "Yok", inline=TRUE, checkbox = TRUE),
+                          conditionalPanel(
+                            condition = "input.cocuk5 == 'Var'",
+                            
+                            textInput(inputId = "cocuk5_isim",label = "5.Çocuk Ad-Soyad", width = 250),
+                            
+                            dropdownButton(label = "5. Çocuk Doğum Tarihi",
+                                           
+                                           div( id = "5",
+                                                wellPanel(
+                                                  p(tags$b("Doğum Tarihi")),
+                                                  dateInput("cocukdogumtarihi55", label = NULL)
+                                                )
+                                           ),
+                                           circle =FALSE, status = "danger",
+                                           icon = icon("fa-thin fa-calendar"), width = "300px"
+                            )
+                          )
+                          
+                        )
+                        
+                      )
+                      
+                      
+                      
+                      
+                      
+                    ) %>% hidden()
+                    
+                  ),
+                  
+                  
+                  
+                  br(),
+                  hr(),
+                  
+                  ####### ** Bakıcı Bilgisi ----
+                  
+                  column(
+                    width = 12,
+                    
+                    div(
+                      id = "bakici_bilgiler",
+                      actionButton(inputId = "action_button6", label = "Bakıcı Bilgisi", icon = icon("cog"))
+                    ),
+                    
+                    div(
+                      id="settings_toggle6",
+                      
+                      wellPanel(
+                        
+                        p(tags$b("Bakıcı Gideri", style = "font-weight: bold; color: red;")),
+                        awesomeRadio("bakici_gider", label = NULL,
+                                     choices = c("Var", "Yok"),
+                                     selected = "Yok", inline=TRUE, checkbox = TRUE),
+                        
+                        p(tags$b("Bakıcı Tutuldu mu?", style = "font-weight: bold; color: red;")),
+                        awesomeRadio("bakici_tut", label = NULL,
+                                     choices = c("Evet", "Hayır"),
+                                     selected = "Hayır", inline=TRUE, checkbox = TRUE),
+                        p(tags$b("Bakıcı Gideri Süresi (Gün)")),
+                        conditionalPanel(
+                          condition = "input.bakici_gider == 'Var'",
+                          
+                          numericInputIcon(
+                            inputId = "bakici_sure",
+                            label = NULL,
+                            value = 0, step = 0.1,
+                            min = 0, max = 120,
+                            icon = icon("calendar")
+                          )
+                          
+                        )
+                        
+                      )
+                      
+                    ) %>% hidden()
+                    
+                  )
+                ),
+                
+                
+            )
+            
+            ###### * Diğer Bilgiler End ----
+            
+            
+            
+            
+          ), # Veri girisi col end 
+          
+          
+          ###### SONUÇLAR COL ----
           
           column(
             width = 6,
-          
+            
             h3("SONUÇLAR",style = "font-weight: solid; color: red;"),
             
             
@@ -1699,18 +1703,18 @@ server <- function(input, output,session) {
               
               
             )
-
-            ) # sonuclar div end 
-          )
-        )  # dashboard body end 
+            
+          ) # sonuclar div end 
+        )
+      )  # dashboard body end 
       
-      ) # dashboard page end 
-
-    
-
-}) 
+    ) # dashboard page end 
     
     
+    
+  }) 
+  
+  
   
   
   

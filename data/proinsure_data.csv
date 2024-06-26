@@ -1,3 +1,2 @@
-"ID","user_name","DosyaNo","Cinsiyet","DogumTarihi","Gelir","KazaTarihi","MaluliyetOran","KusurOran","GeciciMaluliyetSure","KismiOdemeSay","Duration","DoðumTarihi","KýsmiOdemeSay","EntryTime","DoÄŸumTarihi"
-"TE986","user2","qwe","Erkek",NA,"Asgari ücret","2020-03-19",30,75,3,NA,0.69,"1991-07-23",0,"2024-06-24 09:30:57.477994",NA
-"WF005","user1","21312","Erkek",NA,"Asgari ücret","1989-05-14",23,65,3,NA,0.89,NA,NA,"2024-06-24 10:35:39.603128","2021-03-11"
+"ID","user_name","DosyaNo","Cinsiyet","DogumTarihi","Gelir","KazaTarihi","MaluliyetOran","KusurOran","GeciciMaluliyetSure","KismiOdemeSay","RaporTur","Duration","EntryTime"
+"RB923","user2","-","Erkek","2024-06-26","Asgari ücret","2024-06-26",0,50,0,0,"Geçici (Þirket Ödemesiz)",0.13,"2024-06-26 13:28:35.340661"
