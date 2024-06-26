@@ -79,13 +79,14 @@ library(formattable)
 
   # Dosya Yükle ----
   
-dosya_bilgiler <- read_excel("../Ermetus_Reporter/data/dosya_bilgiler.xlsx", sheet = "Sayfa1")
+dosya_bilgiler <- read_excel("../ProInsure/data/dosya_bilgiler.xlsx", sheet = "Sayfa1")
 
-PR_TRH_2010 <- read_excel("../Ermetus_Reporter/data/TRH2010_son.xlsx", sheet = "Sayfa1")
+PR_TRH_2010 <- read_excel("../ProInsure/data/TRH2010_son.xlsx", sheet = "Sayfa1")
 
-Asgari_Tablo <- read_excel("../Ermetus_Reporter/data/Asgari_Ucret_Tablosu_rvz.xlsx", sheet = "Program")
+Asgari_Tablo <- read_excel("../ProInsure/data/Asgari_Ucret_Tablosu_rvz.xlsx", sheet = "Program")
 
-Teminat_Limit_Tablosu <- read_excel("../Ermetus_Reporter/data/Teminat_Limit_Tablosu_rvz.xlsx", sheet = "Teminat")
+
+Teminat_Limit_Tablosu <- read_excel("../ProInsure/data/Teminat_Limit_Tablosu_rvz.xlsx", sheet = "Teminat")
 
 
 ```

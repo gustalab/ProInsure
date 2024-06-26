@@ -254,7 +254,7 @@ server <- function(input, output,session) {
       DogumTarihi =  as.character(input$dogumtarihi),
       Gelir =  input$gelir,
       KazaTarihi = as.character(input$kazatarihi),
-      MaluliyetOran = input$maluliyet,
+      MaluliyetOran = input$maluliyet, 
       KusurOran = input$kusur,
       GeciciMaluliyetSure =input$maluliyet_sure,
       KismiOdemeSay = input$kısmiodeme,
