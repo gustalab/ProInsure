@@ -1,3 +1,5 @@
 "ID","user_name","DosyaNo","Cinsiyet","DogumTarihi","Gelir","KazaTarihi","MaluliyetOran","KusurOran","GeciciMaluliyetSure","KismiOdemeSay","RaporTur","Duration","EntryTime"
 "RB923","user2","-","Erkek","2024-06-26","Asgari ücret","2024-06-26",0,50,0,0,"Geçici (Þirket Ödemesiz)",0.13,"2024-06-26 13:28:35.340661"
 "HM867","user3","-","Erkek","2024-06-26","Asgari ücret","2024-06-26",4,35,3,1,"Sürekli (Þirket Ödemeli)",1.93,"2024-06-26 14:33:44.064122"
+"WF005","user1","-","Erkek","2024-06-26","Asgari ücret","2024-06-26",4,50,0,NA,"Sürekli (Þirket Ödemeli)",0.56,"2024-06-26 14:56:50.84219"
+"WV416","user2","-","Erkek","1990-06-13","Asgari ücret","2020-02-04",4,35,3,1,"Tüm Rapor-1 Ödeme",0.75,"2024-06-26 14:57:56.415555"
