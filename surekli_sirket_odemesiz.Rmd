@@ -79,8 +79,6 @@ library(formattable)
   
 dosya_bilgiler <- read_excel("../ProInsure/data/dosya_bilgiler.xlsx", sheet = "Sayfa1")
 
-PR_TRH_2010 <- read_excel("../ProInsure/data/TRH2010_son.xlsx", sheet = "Sayfa1")
-
 Asgari_Tablo <- read_excel("../ProInsure/data/Asgari_Ucret_Tablosu_rvz.xlsx", sheet = "Program")
 
 
@@ -238,6 +236,20 @@ Teminat_Limit_Tablosu <- read_excel("../ProInsure/data/Teminat_Limit_Tablosu_rvz
   # 2- HESAPLAMADA KULLANILACAK TRH TABLOSU ----
   
   ## 2.1 Hesaplama Tarihine göre beklenen ömür ----
+
+
+PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TRH-2010")
+} else if ( Yasam_Tablosu == "TUIK_20-22") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_20-22")
+} else if ( Yasam_Tablosu == "TUIK_19-21") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_19-21")
+} else if ( Yasam_Tablosu == "TUIK_18-20") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_18-20")
+} else {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "PMF-19312")
+}
+
   
   erkek_table <- PR_TRH_2010 %>% 
     select(Yas, Erkek)

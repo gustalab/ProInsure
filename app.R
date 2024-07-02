@@ -1040,7 +1040,7 @@ server <- function(input, output,session) {
           prettyRadioButtons(
             inputId = "tablo2",
             label = "Tablo seçiniz:", 
-            choices = c("PMF-1931", "TRH-2010","TUIK/20-22","TUIK/19-21","TUIK/18-20", "CSO-1980"),
+            choices = c("PMF-1931", "TRH-2010","TUIK_20-22","TUIK_19-21","TUIK_18-20", "CSO-1980"),
             selected = "TRH-2010",
             icon = icon("check"), 
             bigger = TRUE,
