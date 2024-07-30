@@ -1,0 +1,1039 @@
+---
+title: "__BİLİRKİŞİ RAPORU__"
+# author: "(DOSYA NO: 125381)" 
+# date: "09.02.2022"
+output:
+  officedown::rdocx_document
+  # word_document:
+  #   toc: yes
+  #   toc_depth: '2'
+  # pdf_document:
+  #   toc: no
+  #   toc_depth: '2'
+  # html_document:
+  #   code_folding: none
+  #   df_print: paged
+  #   highlight: tango
+  #   number_sections: yes
+  #   theme: flatly
+  #   toc: yes
+  #   toc_depth: 2
+  #   fig.align: "left" 
+  
+params:
+  PKusur_Orani: NULL
+  PKaza_Tarihi: NULL
+  PDogum_Tarihi: NULL
+  PDosya_No: NULL
+  PAd_Soyad: NULL
+  PCinsiyet: NULL
+  PKismi_Odeme_Sayisi: NULL
+  PKismi_Odeme_Tarihi_1: NULL
+  PKismi_Odeme_Tutari_1: NULL
+  PGelir: NULL
+  PYasam_Tablosu: NULL
+  PEs: NULL
+  PEsAd: NULL
+  PEsDT: NULL
+  PAnne: NULL
+  PAnneAd: NULL
+  PAnneDT: NULL
+  PBaba: NULL
+  PBabaAd: NULL
+  PBabaDT: NULL
+  PCocuksay: NULL
+  PCocuk1_DT: NULL
+  PCocuk1_Ad: NULL
+  PCocuk2_DT: NULL
+  PCocuk2_Ad: NULL
+  PCocuk3_DT: NULL
+  PCocuk3_Ad: NULL
+  PCocuk4_DT: NULL
+  PCocuk4_Ad: NULL
+  PCocuk5_DT: NULL
+  PCocuk5_Ad: NULL
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    eval = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    dpi = 300,
+    fig.align = "center"
+    )
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+Sys.setlocale(locale = "Turkish")
+
+```
+
+```{r echo=FALSE}
+
+library(readxl)
+library(writexl)
+library(tidyr)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(scales)
+# library(formattable)
+# library(kableExtra)
+
+```
+
+
+
+```{r  echo=FALSE, include=FALSE}
+
+destek_excel <- read_excel("../ProInsure/data/dosya_bilgiler.xlsx", sheet = "destek")
+destek_excel <- destek_excel |> head(1)
+
+
+# Params Bilgiler
+
+Dosya_No <- params$PDosya_No  
+Yasam_Tablosu <- params$PYasam_Tablosu
+
+#---- Hesap Tarihi
+
+Hesap_Tarihi <- Sys.Date()
+
+hesap_tarihi_yil <- as.numeric(lubridate::year(Hesap_Tarihi))
+
+  # Kişisel Bilgiler ----
+
+  Ad_Soyad <- params$PAd_Soyad
+  Cinsiyet <-  params$PCinsiyet                         
+  Dogum_Tarihi <- as.Date(params$PDogum_Tarihi)
+  Gelir_Durumu <- params$PGelir
+  # Gelir_Durumu <- "Gelir"                               # Bekar", "evli_cocuksuz", "1cocuk" ,"2cocuk", "3cocuk", "4cocuk", "Gelir"
+  Kaza_Tarihi <- as.Date(params$PKaza_Tarihi)
+
+
+#----
+
+
+# NOT: gelir_durumu "Gelir" olarak belirtildi ise aşağıdaki tabloyu doldur...
+  gelir_tablosu <- 
+    
+    tibble::tribble(
+      ~Donem, ~Gelir,
+      
+      "2005-01-01/2005-12-31", 100L,
+      "2006-01-01/2006-12-31", 100L,
+      "2007-01-01/2007-06-30", 100L,
+      "2007-07-01/2007-12-31", 100L,
+      "2008-01-01/2008-06-30", 100L,
+      "2008-07-01/2008-12-31", 100L,
+      "2009-01-01/2009-06-30", 100L,
+      "2009-07-01/2009-12-31", 100L,
+      "2010-01-01/2010-06-30", 100L,
+      "2010-07-01/2010-12-31", 100L,
+      "2011-01-01/2011-06-30", 100L,
+      "2011-07-01/2011-12-31", 100L,
+      "2012-01-01/2012-06-30", 100L,
+      "2012-07-01/2012-12-31", 100L,
+      "2013-01-01/2013-06-30", 100L,
+      "2013-07-01/2013-12-31", 100L,
+      "2014-01-01/2014-06-30", 100L,
+      "2014-07-01/2014-12-31", 100L,
+      "2015-01-01/2015-06-30", 100L,
+      "2015-07-01/2015-12-31", 100L,
+      "2016-01-01/2016-12-31", 100L,
+      "2017-01-01/2017-12-31", 100L,
+      "2018-01-01/2018-12-31", 100L,
+      "2019-01-01/2019-12-31", 100L,
+      "2020-01-01/2020-12-31", 100L,
+      "2021-01-01/2021-12-31", 100L,
+      "2022-01-01/2022-06-30", 100L,
+      "2022-07-01/2022-12-31", 100L,
+      "2023-01-01/2023-06-30", 100L,
+      "2023-07-01/2023-12-31", 100L,
+      "2024-01-01/2024-12-31", 100L,
+    )
+
+gelir_tablosu <- gelir_tablosu %>% 
+  mutate(Gelir = as.numeric(Gelir))
+
+Asgari_Tablo <- read_excel("../ProInsure/data/Asgari_Ucret_Tablosu_rvz.xlsx", sheet = "Program")
+
+  # Genel Gelir Tablosu ----
+  
+  Gelir_tablo <-  Asgari_Tablo %>%
+    left_join(gelir_tablosu) %>%
+    separate(Donem, sep = "/", into = c("Donem_Baslangic", "Donem_Son")) %>%
+    mutate(D_B = as.Date(Donem_Baslangic),
+           D_S = as.Date(Donem_Son))
+
+
+
+```
+
+
+
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Aile Bilgileri ----
+
+Es <- params$PEs
+Es_Ad <- params$PEsAd
+Es_Dogum_T. <- as.Date(params$PEsDT)      
+# 
+
+# Cocuk_durumu <- params$PCocuksay
+# # 
+Cocuk1_Ad <- params$PCocuk1_Ad
+Cocuk1_Dogum_T. <- as.Date(params$PCocuk1_DT)
+Cocuk2_Ad <- params$PCocuk2_Ad
+Cocuk2_Dogum_T. <- as.Date(params$PCocuk2_DT)
+Cocuk3_Ad <- params$PCocuk3_Ad
+Cocuk3_Dogum_T. <- as.Date(params$PCocuk3_DT)
+Cocuk4_Ad <- params$PCocuk4_Ad
+Cocuk4_Dogum_T. <-as.Date(params$PCocuk4_DT)
+Cocuk5_Ad <- params$PCocuk5_Ad
+Cocuk5_Dogum_T. <- as.Date(params$PCocuk5_DT)
+#
+Anne <- params$PAnne
+Anne_Ad <- params$PAnneAd
+Anne_Dogum_T. <- as.Date(params$PAnneDT)
+#
+Baba <- params$PBaba
+Baba_Ad <- params$PBabaAd
+Baba_Dogum_T. <- as.Date(params$PBabaDT)
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Destek Alan Kişilerin Tablosu
+
+destek_alan_bilgiler_tbl <- data.frame(Yakınlık = c("Eş", "Anne", "Baba", "Çocuk1", "Çocuk2", "Çocuk3", "Çocuk4", "Çocuk5"),
+                                       Ad_Soyad = c(Es_Ad, Anne_Ad, Baba_Ad, Cocuk1_Ad, Cocuk2_Ad, Cocuk3_Ad, Cocuk4_Ad, Cocuk5_Ad),
+                                       Dogum_Tarihi = c(Es_Dogum_T., Anne_Dogum_T.,Baba_Dogum_T., Cocuk1_Dogum_T., Cocuk2_Dogum_T.,Cocuk3_Dogum_T., Cocuk4_Dogum_T., Cocuk5_Dogum_T.)
+                                       ) 
+
+destek_alan_bilgiler_tablosu <- destek_alan_bilgiler_tbl %>%
+  filter(Dogum_Tarihi != Hesap_Tarihi)
+
+# Destek Alan Kişilerin Pay
+
+destek_alan_pay_tbl <- data.frame(Yakınlık = c("Eş", "Anne", "Baba", "Çocuk1", "Çocuk2", "Çocuk3", "Çocuk4", "Çocuk5"),
+                                  Ad_Soyad = c(Es_Ad, Anne_Ad, Baba_Ad, Cocuk1_Ad, Cocuk2_Ad, Cocuk3_Ad, Cocuk4_Ad, Cocuk5_Ad),
+                                  Dogum_Tarihi = c(Es_Dogum_T., Anne_Dogum_T.,Baba_Dogum_T., Cocuk1_Dogum_T., Cocuk2_Dogum_T.,Cocuk3_Dogum_T., Cocuk4_Dogum_T., Cocuk5_Dogum_T.),
+                                  Pay = c(2, 1, 1, 1, 1, 1, 1, 1)
+                                  )
+
+destek_alan_pay_tbl2 <- destek_alan_pay_tbl %>%
+  filter(Dogum_Tarihi != Hesap_Tarihi)
+
+destek_alan_pay_tablosu <- destek_alan_pay_tbl2 %>%
+  mutate(Pay_yuzdesi = round(Pay / (2 + sum(Pay)),digits = 2)) %>%
+  select(-Dogum_Tarihi)
+
+destek_alan_pay_tablosu$Pay_yuzdesi <- scales::percent(destek_alan_pay_tablosu$Pay_yuzdesi,accuracy = 0.1)
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+#---- Kaza Bilgileri
+
+Kaza_Tarihi <- as.Date(params$PKaza_Tarihi)   
+
+Kusur_Orani <- params$PKusur_Orani              
+
+#
+
+kaza_yil <- as.numeric(lubridate::year(Kaza_Tarihi))
+kaza_yil
+
+
+gecen_sure <- as.numeric(hesap_tarihi_yil-kaza_yil)
+
+#---- Şirket Ödeme Bilgileri
+
+Kismi_Odeme_Sayisi <- params$PKismi_Odeme_Sayisi
+
+Odeme_Tarihi_1 <- as.Date(params$PKismi_Odeme_Tarihi_1)         
+Odeme_Tutari_1 <- params$PKismi_Odeme_Tutari_1       
+
+Odeme_Tarihi_2 <- "none"
+Odeme_Tutari_2 <- "none"
+
+Odeme_Tarihi_3 <- "none"
+Odeme_Tutari_3 <- "none"
+
+Odeme_Tarihi_4 <- "none"
+Odeme_Tutari_4 <- "none"
+
+faiz_oranı <- 9
+
+#---- Teknik Faiz
+
+Teknik_Faiz	<- 1.8                      # Örn: 1.8
+
+
+#---- Diğer Parametreler
+
+Gider_Payı <- 0.01
+Getiri_Oranı <- 0.1198
+Enflasyon_Oranı <- 0.1
+Birikim_Tutarı <- 100.000
+Carpan <- (1 + Enflasyon_Oranı) / (1 + Getiri_Oranı)
+
+
+  # Kaza Tarihi Teminat Limiti
+  
+Teminat_Limit_Tablosu <- read_excel("../ProInsure/data/Teminat_Limit_Tablosu_rvz.xlsx", sheet = "Teminat")
+  
+  Teminat_Limit_Tablosu <- Teminat_Limit_Tablosu %>% 
+    separate(Donem, sep = "/", into = c("Donem_Baslangic", "Donem_Son")) %>%
+    mutate(D_B = as.Date(Donem_Baslangic),
+         D_S = as.Date(Donem_Son))
+  
+  kaza_tarihi_teminat <- Teminat_Limit_Tablosu %>% 
+    filter(D_S >= Kaza_Tarihi & Kaza_Tarihi > D_B)
+  
+  kaza_tarihi_teminat_limit_frmted <- format(kaza_tarihi_teminat$Teminat_Limiti, scientific = FALSE)
+  kaza_tarihi_teminat_limiti <- as.numeric(kaza_tarihi_teminat$Teminat_Limiti)
+
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+
+# BEKLENEN OMUR
+
+## Müteveffa
+
+TRH_Tablosu <- if ( Yasam_Tablosu == "TRH-2010") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TRH-2010")
+} else if ( Yasam_Tablosu == "TUIK_20-22") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_20-22")
+} else if ( Yasam_Tablosu == "TUIK_19-21") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_19-21")
+} else if ( Yasam_Tablosu == "TUIK_18-20") {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "TUIK_18-20")
+} else {
+  read_excel("../ProInsure/data/All_Tables.xlsx", sheet = "PMF-19312")
+}
+
+
+# TRH_Tablosu <- read_excel("../Ermetus_Reporter/data/TRH2010_son.xlsx", sheet = "Sayfa1") 
+
+muteveffa_yas <- round(lubridate::time_length(difftime(Kaza_Tarihi, Dogum_Tarihi), "year"))  
+muteveffa_yas
+
+filtered_TRH_Tablosu_muteveffa <- TRH_Tablosu %>% 
+    filter(Yas == muteveffa_yas)
+
+filtered_TRH_Tablosu_muteveffa
+
+
+muteveffa_beklenen_omur <- round(ifelse (Cinsiyet == "Erkek", filtered_TRH_Tablosu_muteveffa$Erkek, filtered_TRH_Tablosu_muteveffa$Kadın),digits = 2)
+muteveffa_beklenen_omur
+
+muteveffa_beklenen_omur_yas <- muteveffa_yas + muteveffa_beklenen_omur
+muteveffa_beklenen_omur_yas
+
+
+muteveffa_beklenen_omur_tbl <- tibble("Kisi" = "Müteveffa",
+                                      "Ad_Soyad" = Ad_Soyad,
+                                      "Dogum_Tarihi" = Dogum_Tarihi,
+                                      "Yas" = muteveffa_yas,
+                                      "Beklenen_Omur_(yıl)" = round(muteveffa_beklenen_omur, digits = 2))
+
+## Eş
+
+Yas_es <- round(lubridate::time_length(difftime(Hesap_Tarihi, Es_Dogum_T.), "year"))
+Yas_es
+
+filtered_TRH_Tablosu_es <- TRH_Tablosu %>%
+    filter(Yas == Yas_es)
+
+filtered_TRH_Tablosu_es
+
+es_beklenen_omur <- round(ifelse (Cinsiyet == "Erkek", filtered_TRH_Tablosu_es$Kadın, filtered_TRH_Tablosu_es$Erkek),digits = 2)
+es_beklenen_omur
+
+es_beklenen_omur_yas <- Yas_es + es_beklenen_omur
+es_beklenen_omur_yas
+
+es_beklenen_omur_tbl <- tibble("Kisi" = "Es",
+                                      "Ad_Soyad" = Es_Ad,
+                                      "Dogum_Tarihi" = Es_Dogum_T.,
+                                      "Yas" = Yas_es,
+                                      "Beklenen_Omur_(yıl)" = round(es_beklenen_omur, digits = 2))
+
+## Anne
+
+Yas_anne <- round(lubridate::time_length(difftime(Hesap_Tarihi, Anne_Dogum_T.), "year"))
+Yas_anne
+
+
+filtered_TRH_Tablosu_anne <- TRH_Tablosu %>%
+    filter(Yas == Yas_anne)
+
+filtered_TRH_Tablosu_anne
+
+anne_beklenen_omur <- round(filtered_TRH_Tablosu_anne$Kadın,digits = 2)
+anne_beklenen_omur
+
+anne_beklenen_omur_yas <- Yas_anne + anne_beklenen_omur
+anne_beklenen_omur_yas
+
+anne_beklenen_omur_tbl <- tibble("Kisi" = "Anne",
+                                      "Ad_Soyad" = Anne_Ad,
+                                      "Dogum_Tarihi" = Anne_Dogum_T.,
+                                      "Yas" = Yas_anne,
+                                      "Beklenen_Omur_(yıl)" = round(anne_beklenen_omur, digits = 2))
+
+## Baba
+
+Yas_baba <- round(lubridate::time_length(difftime(Hesap_Tarihi, Baba_Dogum_T.), "year"))
+Yas_baba
+
+
+filtered_TRH_Tablosu_baba <- TRH_Tablosu %>%
+    filter(Yas == Yas_baba)
+
+filtered_TRH_Tablosu_baba
+
+baba_beklenen_omur <- round(filtered_TRH_Tablosu_baba$Erkek,digits = 2)
+baba_beklenen_omur
+
+baba_beklenen_omur_yas <- Yas_baba + baba_beklenen_omur
+baba_beklenen_omur_yas
+
+baba_beklenen_omur_tbl <- tibble("Kisi" = "Baba",
+                                      "Ad_Soyad" = Baba_Ad,
+                                      "Dogum_Tarihi" = Baba_Dogum_T.,
+                                      "Yas" = Yas_baba,
+                                      "Beklenen_Omur_(yıl)" = round(baba_beklenen_omur, digits = 2))
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Beklenen Ömür Tablosu 
+
+beklenen_omur_tablosu <- bind_rows(
+  muteveffa_beklenen_omur_tbl,
+  es_beklenen_omur_tbl,
+  anne_beklenen_omur_tbl ,
+  baba_beklenen_omur_tbl 
+) %>% 
+  filter(Yas >= 1)
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+####  Yaş ve Destel Süresi Hesaplamaları 
+
+destek_yas_es <- ifelse(muteveffa_beklenen_omur_yas + gecen_sure >= es_beklenen_omur_yas, es_beklenen_omur_yas, muteveffa_beklenen_omur_yas)
+destek_yas_es
+destek_yıl_es <- round(destek_yas_es + gecen_sure - Yas_es, digits = 0)
+destek_yıl_es
+
+destek_yıl_anne <- round(anne_beklenen_omur, digits = 0)
+destek_yıl_anne
+
+destek_yıl_baba <- round(baba_beklenen_omur, digits = 0)
+destek_yıl_baba
+
+Yas_cocuk1 <- round(lubridate::time_length(difftime(Kaza_Tarihi, Cocuk1_Dogum_T.), "year"))
+Yas_cocuk1
+destek_yıl_c1 <- ifelse((22- Yas_cocuk1) >= 22, 0, (22- Yas_cocuk1))
+destek_yıl_c1
+
+Yas_cocuk2 <- round(lubridate::time_length(difftime(Kaza_Tarihi, Cocuk2_Dogum_T.), "year"))
+Yas_cocuk2
+destek_yıl_c2 <- ifelse((22- Yas_cocuk2) >= 22, 0, (22- Yas_cocuk2))
+destek_yıl_c2
+
+Yas_cocuk3 <- round(lubridate::time_length(difftime(Kaza_Tarihi, Cocuk3_Dogum_T.), "year"))
+Yas_cocuk3
+destek_yıl_c3 <- ifelse((22- Yas_cocuk3) >= 22, 0, (22- Yas_cocuk3))
+destek_yıl_c3
+
+Yas_cocuk4 <- round(lubridate::time_length(difftime(Kaza_Tarihi, Cocuk4_Dogum_T.), "year"))
+Yas_cocuk4
+destek_yıl_c4 <- ifelse((22- Yas_cocuk4) >= 22, 0, (22- Yas_cocuk4))
+destek_yıl_c4
+
+Yas_cocuk5 <- round(lubridate::time_length(difftime(Kaza_Tarihi, Cocuk5_Dogum_T.), "year"))
+Yas_cocuk5
+destek_yıl_c5 <- ifelse((22- Yas_cocuk5) >= 22, 0, (22- Yas_cocuk5))
+destek_yıl_c5
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+# Varis Tabloları
+
+# Çocuklar
+
+cocuk_yas_tbl <- data.frame(Varis = c("Cocuk_1", "Cocuk_2","Cocuk_3","Cocuk_4","Cocuk_5"),
+                               Yas = c(Yas_cocuk1, Yas_cocuk2, Yas_cocuk3, Yas_cocuk4, Yas_cocuk5))
+
+cocuk_yas_tbl <- cocuk_yas_tbl %>%
+  arrange(desc(Yas)) %>%
+  filter(Yas < 22 & Yas > 0.1)
+cocuk_yas_tbl
+
+cocuk_destek_suresi_tbl <- cocuk_yas_tbl %>%
+  mutate(Toplam_Destek_Suresi = 22 - Yas)
+
+cocuk_destek_suresi_tbl 
+
+# Eş
+
+es_yas_tbl <- data_frame(Varis = "Es",
+                         Yas = Yas_es)
+es_yas_tbl <- es_yas_tbl %>% 
+  filter(Yas > 0.1)
+
+
+es_destek_suresi_tbl <- es_yas_tbl %>% 
+  mutate(Toplam_Destek_Suresi = destek_yıl_es)
+es_destek_suresi_tbl
+
+# Anne
+
+anne_yas_tbl <- data_frame(Varis = "Anne",
+                         Yas = Yas_anne)
+anne_yas_tbl <- anne_yas_tbl %>% 
+  filter(Yas > 0.1)
+
+anne_destek_suresi_tbl <- anne_yas_tbl %>%
+  mutate(Toplam_Destek_Suresi = destek_yıl_anne)
+anne_destek_suresi_tbl
+
+# Baba
+
+baba_yas_tbl <- data_frame(Varis = "Baba",
+                         Yas = Yas_baba)
+baba_yas_tbl <- baba_yas_tbl %>% 
+  filter(Yas > 0.1)
+
+
+baba_destek_suresi_tbl <- baba_yas_tbl %>%
+  mutate(Toplam_Destek_Suresi = destek_yıl_baba)
+baba_destek_suresi_tbl
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Destek Son yaş (Müteveffa)
+
+destek_son_yas <- ifelse(muteveffa_beklenen_omur_yas >= es_beklenen_omur_yas, muteveffa_yas+destek_yıl_es, muteveffa_beklenen_omur_yas)
+destek_son_yas
+
+
+# Destek Tablosu
+
+toplam_destek_tbl <- data.frame(Mute_Yas = (muteveffa_yas+1):destek_son_yas,
+                                Year = kaza_yil: (kaza_yil + (destek_son_yas-muteveffa_yas-1)))
+
+toplam_destek_tbl
+
+toplam_destek_tbl <- toplam_destek_tbl %>%
+  mutate(es_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + gecen_sure + destek_yıl_es, 2, 0),
+         anne_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + gecen_sure + destek_yıl_anne, 1, 0),
+         baba_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + gecen_sure + destek_yıl_baba, 1, 0),
+         c1_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + destek_yıl_c1, 1, 0),
+         c2_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + destek_yıl_c2, 1, 0),
+         c3_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + destek_yıl_c3, 1, 0),
+         c4_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + destek_yıl_c4, 1, 0),
+         c5_pay = ifelse(toplam_destek_tbl$Mute_Yas <= muteveffa_yas + destek_yıl_c5, 1, 0)
+  )
+
+toplam_destek_tbl$es_pay <- if (Es == "Yok") {0} else {toplam_destek_tbl$es_pay}
+toplam_destek_tbl$anne_pay <- if (Anne == "Yok") {0} else {toplam_destek_tbl$anne_pay}
+toplam_destek_tbl$baba_pay <- if (Baba == "Yok") {0} else {toplam_destek_tbl$baba_pay}
+
+
+toplam_destek_tbl <- toplam_destek_tbl %>%
+  mutate(donem_toplam_pay = 2 + rowSums(toplam_destek_tbl[, 3:ncol(toplam_destek_tbl)]))
+
+
+toplam_destek_tbl$Es_Destek_Yuzdesi <- round((toplam_destek_tbl$es_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Anne_Destek_Yuzdesi <- round((toplam_destek_tbl$anne_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Baba_Destek_Yuzdesi <- round((toplam_destek_tbl$baba_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Çocuk_1_Destek_Yuzdesi <- round((toplam_destek_tbl$c1_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Çocuk_2_Destek_Yuzdesi <- round((toplam_destek_tbl$c2_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Çocuk_3_Destek_Yuzdesi <- round((toplam_destek_tbl$c3_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Çocuk_4_Destek_Yuzdesi <- round((toplam_destek_tbl$c4_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+toplam_destek_tbl$Çocuk_5_Destek_Yuzdesi <- round((toplam_destek_tbl$c5_pay / toplam_destek_tbl$donem_toplam_pay),digits = 3)
+
+
+#
+# 
+# ################## Aktif-Pasif Dönem
+
+destek_tbl <- toplam_destek_tbl %>%
+  mutate(Donem = ifelse(Mute_Yas <= 60, "Aktif", "Pasif"))
+
+destek_tbl <- destek_tbl %>% select(Donem, Year, Mute_Yas, everything())
+
+destek_tbl <- destek_tbl[ , c(1:3, grep("Destek", names(destek_tbl)))]
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# ######################### Kaza Tarihi Gelir
+# 
+# Kaza_Tarihi <- as.Date(dmy(Kaza_Tarihi), "%d/%m/%Y")
+
+Kaza_Tarihi_Gelir_tbl <- Gelir_tablo %>%
+   filter(D_S >= Kaza_Tarihi & Kaza_Tarihi > D_B) %>%
+   select(Gelir_Durumu)
+
+Kaza_Tarihi_Gelir <- Kaza_Tarihi_Gelir_tbl[[1]]
+Kaza_Tarihi_Gelir
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+# Bilinen Dönem Tablosu ----
+
+## Bilinen Dönem Tablosu_ Paylar ----
+
+bilinen_donem_baslangıc <- Kaza_Tarihi
+
+bilinen_donem_baslangıc_chr <- as.character(bilinen_donem_baslangıc)
+
+bilinen_donem_tablosu <- Gelir_tablo %>%
+  filter(D_S >= bilinen_donem_baslangıc & D_S <= Hesap_Tarihi + 365)
+
+hesaplama_tarihi <- as.character(Hesap_Tarihi)
+
+hesaplama_tarihi_chr <- as.character(hesaplama_tarihi)
+
+bilinen_donem_tablosu$Donem_Baslangic[1] <- bilinen_donem_baslangıc_chr
+bilinen_donem_tablosu$Donem_Son[nrow(bilinen_donem_tablosu)] <- hesaplama_tarihi_chr
+
+# 
+bilinen_donem_tazminat_hesaplama <- bilinen_donem_tablosu %>%
+  mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
+         Donem_Sonu = as.Date(Donem_Son)) %>%
+  mutate(Kazanilan_Ay = round(time_length(Donem_Sonu - Donem_Baslangici, "month") , digits = 1)) %>%
+
+  mutate(Kazanilan_Ay = case_when(
+    Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    Kazanilan_Ay >= 8 ~  round(Kazanilan_Ay, digits = 1),
+    Kazanilan_Ay >= 5.8 ~  plyr::round_any(Kazanilan_Ay, 1, f = ceiling),
+    Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = floor),
+    TRUE ~ Kazanilan_Ay)) %>%
+
+  mutate(Kusur_Oranı = Kusur_Orani) %>%
+  mutate(Year =  year <- as.numeric(format(D_B,'%Y'))) %>%
+  select(Gelir_Durumu, Kazanilan_Ay, Donem_Baslangic, Donem_Son, Kusur_Oranı, Year) %>%
+  rename("Gelir" = Gelir_Durumu) %>%
+  mutate(Donem_Tazminat = round(Kazanilan_Ay * Gelir * Kusur_Oranı/100, digits = 2))
+
+
+Bilinen_Donem_Tablosu_pay <- bilinen_donem_tazminat_hesaplama %>%
+  select(Donem_Baslangic, Donem_Son, Year, Kazanilan_Ay, Gelir, Kusur_Oranı, Donem_Tazminat)
+
+Bilinen_Donem_Tablosu_pay <- Bilinen_Donem_Tablosu_pay %>%
+  left_join(destek_tbl, by = "Year")
+
+Bilinen_Donem_Tablosu_pay 
+
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+## Bilinen Dönem Tablosu_Tazminatlar ----
+
+
+Bilinen_Donem_Tablosu_tazminat <- Bilinen_Donem_Tablosu_pay %>% 
+  mutate(
+    Es_Tazminat = round(Donem_Tazminat * Es_Destek_Yuzdesi,digits = 2),
+    Anne_Tazminat = round(Donem_Tazminat * Anne_Destek_Yuzdesi,digits = 2),
+    Baba_Tazminat = round(Donem_Tazminat * Baba_Destek_Yuzdesi,digits = 2),
+    Çocuk_1_Tazminat = round(Donem_Tazminat * Çocuk_1_Destek_Yuzdesi,digits = 2),
+    Çocuk_2_Tazminat = round(Donem_Tazminat * Çocuk_2_Destek_Yuzdesi,digits = 2),
+    Çocuk_3_Tazminat = round(Donem_Tazminat * Çocuk_3_Destek_Yuzdesi,digits = 2),
+    Çocuk_4_Tazminat = round(Donem_Tazminat * Çocuk_4_Destek_Yuzdesi,digits = 2),
+    Çocuk_5_Tazminat = round(Donem_Tazminat * Çocuk_5_Destek_Yuzdesi,digits = 2)
+  ) 
+
+
+## Bilinen Dönem Son Tablo
+
+
+# select the numeric columns
+Bilinen_Donem_Tablosu_tazminat_numeric <- Bilinen_Donem_Tablosu_tazminat %>%
+  select(is.numeric)
+
+# filter the 0 columns
+Bilinen_Donem_Tablosu_tazminat_numeric <- Bilinen_Donem_Tablosu_tazminat_numeric %>%
+  select_if(colSums(.) != 0)
+
+
+# select the non-numeric columns
+
+Bilinen_Donem_Tablosu_tazminat_chr <- Bilinen_Donem_Tablosu_tazminat %>%
+  select(!is.numeric)
+
+# Bind two tables
+bilinen_donem_tablosu <- cbind(Bilinen_Donem_Tablosu_tazminat_chr, Bilinen_Donem_Tablosu_tazminat_numeric) %>% 
+  select(Mute_Yas, Donem_Baslangic,	Donem_Son, Kazanilan_Ay,	Gelir,	Kusur_Oranı, everything(), -Donem, -Donem_Tazminat, -Year)
+
+  
+bilinen_donem_tablosu[ , grep("Destek", names(bilinen_donem_tablosu), value = TRUE)] <- bilinen_donem_tablosu[ , grep("Destek", names(bilinen_donem_tablosu), value = TRUE)] * 100
+
+
+Bilinen_Donem_Tablosu <- bilinen_donem_tablosu
+
+class(Bilinen_Donem_Tablosu$Es_Tazminat)
+
+
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+
+## Bilinen Dönem Tazminatlar- Ayrı Toplamlar
+
+Bilinen_Donem_Tablosu_destek <- Bilinen_Donem_Tablosu[ , grep("Tazminat", names(Bilinen_Donem_Tablosu), value = TRUE)]
+
+
+Bilinen_Donem_Tablosu_destek <- Bilinen_Donem_Tablosu_destek %>%
+  summarise_all(sum) %>%
+  t() %>%
+  as.data.frame() %>%
+  setNames("Bilinen_Dönem_Tazminatı") %>%
+  rownames_to_column("Destek_Alan")
+
+
+toplam_bilinen_donem_tazminatı <- sum(Bilinen_Donem_Tablosu_destek$Bilinen_Dönem_Tazminatı)
+
+toplam_bilinen_donem_tazminatı_formatted <- format(toplam_bilinen_donem_tazminatı, big.mark = ".", decimal.mark = ",")
+
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Bilinmeyen Dönem Tablosu ----
+
+bilinmeyen_donem_tbl <- destek_tbl %>%
+  filter(Mute_Yas >= max(Bilinen_Donem_Tablosu$Mute_Yas)) %>%
+  mutate(Kazanılan_Ay = 12,
+         Kusur_Oranı = Kusur_Orani)
+
+bilinmeyen_donem_tbl$Kazanılan_Ay[1] <- 12 - tail(Bilinen_Donem_Tablosu$Kazanilan_Ay,1)
+
+bilinmeyen_donem_tbl <- bilinmeyen_donem_tbl %>% 
+  mutate(Gelir = ifelse(Mute_Yas <= 60, max(Bilinen_Donem_Tablosu$Gelir), max(Gelir_tablo$Bekar)),
+         Donem_Tazminat = round(Kazanılan_Ay * Gelir * Kusur_Oranı/100, digits = 2)
+         ) 
+
+
+Bilinmeyen_Donem_Tablosu_tazminat <- bilinmeyen_donem_tbl %>% 
+  mutate(
+    Es_Tazminat = round(Donem_Tazminat * Es_Destek_Yuzdesi,digits = 2),
+    Anne_Tazminat = round(Donem_Tazminat * Anne_Destek_Yuzdesi,digits = 2),
+    Baba_Tazminat = round(Donem_Tazminat * Baba_Destek_Yuzdesi,digits = 2),
+    Çocuk_1_Tazminat = round(Donem_Tazminat * Çocuk_1_Destek_Yuzdesi,digits = 2),
+    Çocuk_2_Tazminat = round(Donem_Tazminat * Çocuk_2_Destek_Yuzdesi,digits = 2),
+    Çocuk_3_Tazminat = round(Donem_Tazminat * Çocuk_3_Destek_Yuzdesi,digits = 2),
+    Çocuk_4_Tazminat = round(Donem_Tazminat * Çocuk_4_Destek_Yuzdesi,digits = 2),
+    Çocuk_5_Tazminat = round(Donem_Tazminat * Çocuk_5_Destek_Yuzdesi,digits = 2)
+  ) 
+  
+
+# select the numeric columns
+Bilinmeyen_Donem_Tablosu_tazminat_numeric <- Bilinmeyen_Donem_Tablosu_tazminat %>%
+  select(is.numeric)
+
+# select the non-numeric columns
+
+Bilinmeyen_Donem_Tablosu_tazminat_chr <- Bilinmeyen_Donem_Tablosu_tazminat %>%
+  select(!is.numeric)
+
+# filter the 0 columns
+Bilinmeyen_Donem_Tablosu_tazminat_numeric <- Bilinmeyen_Donem_Tablosu_tazminat_numeric %>%
+  select_if(colSums(.) != 0)
+
+# Bind two tables
+Bilinmeyen_Donem_Tablosu <- cbind(Bilinmeyen_Donem_Tablosu_tazminat_chr, Bilinmeyen_Donem_Tablosu_tazminat_numeric) %>% 
+  select(-Donem_Tazminat) %>% 
+  select(Donem, Year, Mute_Yas, Kazanılan_Ay,	Gelir, 	Kusur_Oranı, everything())
+  
+Bilinmeyen_Donem_Tablosu[ , grep("Destek", names(Bilinmeyen_Donem_Tablosu), value = TRUE)] <- Bilinmeyen_Donem_Tablosu[ , grep("Destek", names(Bilinmeyen_Donem_Tablosu), value = TRUE)] * 100
+
+
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+
+
+## Bilinmeyen Dönem Tazminatlar- Ayrı Toplamlar
+
+Bilinmeyen_Donem_Tablosu_destek <- Bilinmeyen_Donem_Tablosu[ , grep("Tazminat", names(Bilinmeyen_Donem_Tablosu), value = TRUE)] 
+
+
+Bilinmeyen_Donem_Tablosu_destek <- Bilinmeyen_Donem_Tablosu_destek %>%
+  summarise_all(sum) %>%
+  t() %>% 
+  as.data.frame() %>%
+  setNames("Bilinmeyen_Dönem_Tazminatı") %>%
+  rownames_to_column("Destek_Alan")
+
+
+toplam_bilinmeyen_donem_tazminatı <- sum(Bilinmeyen_Donem_Tablosu_destek$Bilinmeyen_Dönem_Tazminatı)
+
+toplam_bilinmeyen_donem_tazminatı_formatted <- format(toplam_bilinmeyen_donem_tazminatı, big.mark = ".", decimal.mark = ",")
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+
+# Dönemsel Tazminat Tutarları ----
+
+
+Toplam_Tazminat_tbl <- Bilinen_Donem_Tablosu_destek %>%
+  left_join(Bilinmeyen_Donem_Tablosu_destek, by = "Destek_Alan")
+
+Toplam_Tazminat_tbl[is.na(Toplam_Tazminat_tbl)] <- 0
+
+  
+Toplam_Tazminat_tbl <- Toplam_Tazminat_tbl %>% 
+  mutate(Toplam_Tazminat = Bilinen_Dönem_Tazminatı + Bilinmeyen_Dönem_Tazminatı) 
+
+
+toplam_tazminat_tum <- sum(Toplam_Tazminat_tbl$Toplam_Tazminat )
+
+```
+ 
+
+```{r echo=FALSE, include=FALSE}
+
+# Kaza Tarihi Teminat Limitine göre son tablo ----
+
+kaza_tarihi_teminat_limiti
+toplam_tazminat_tum
+teminat_tazminat_rate <- kaza_tarihi_teminat_limiti / toplam_tazminat_tum
+
+
+Toplam_Tazminat_tbl_limitli <- Toplam_Tazminat_tbl %>%
+  select(Destek_Alan, Toplam_Tazminat) %>%
+  mutate(Teminat_Limitli_Toplam_Tazminat = Toplam_Tazminat * teminat_tazminat_rate)
+
+Toplam_Tazminat_son <- if (kaza_tarihi_teminat_limiti > toplam_tazminat_tum ) {Toplam_Tazminat_tbl } else { Toplam_Tazminat_tbl_limitli }
+
+Toplam_Tazminat_son_isimli <- cbind(Toplam_Tazminat_son, destek_alan_bilgiler_tablosu) %>%
+  select(-Dogum_Tarihi, -Destek_Alan) %>%
+  select(Ad_Soyad, Yakınlık, everything()) 
+  # rename(Tazminat = "Teminat_Limitli_Toplam_Tazminat") 
+
+```
+
+
+
+# Rapor Konusu
+
+
+```{r echo=FALSE}
+
+
+str_glue("Sayın Hakemliğinizce destekten yoksun kalma tazminat hesaplaması için bilirkişi olarak atandığımız dosyaya ilişkin, Sigorta Tahkim Komisyonu Sayın Hakemliğinizin TRH 2020 ve progresif rant yöntemi ile aktüeryal ilkelere uygun destekten yoksun kalma tazminat hesaplaması yapılması talebi doğrultusunda hazırlanan iş bu Bilirkişi Raporu; {Kaza_Tarihi} tarihinde meydana gelen trafik kazasında hayatını kaybeden {Ad_Soyad}'ın desteğinden yoksun kalan  aşağıdaki tabloda belirtilen kişiler için destekten yoksun kalma tazminatı hesabını içermektedir.")
+
+knitr::kable(destek_alan_bilgiler_tablosu, caption = "Destek Alan Kişiler Tablosu") 
+
+```
+
+
+# Kusur Durumuna İlişkin Değerlendirme
+	
+
+
+```{r echo=FALSE}
+
+str_glue("Hakemliğinizce verilen dosya eklerinde yer alan olay yeri kaza tespit tutanağı tutanağı incelendiğinde kazaya neden olan aracın trafik poliçesi kapsamında davalı şirketin %{Kusur_Orani} kusurlu olduğu görülmüştür.")
+
+```
+
+
+# Bilirkişi Hesap Tarihi İtibari ile Tazminat Hesaplaması 
+
+## Tazminat hesaplamasına esas gelir 
+Kaza tarihi ile rapor tanzim tarihi arasında bilinen (işlemiş) dönem için tazminat hesaplamasında kullanılacak gelirler Sayın Hakemliğinizce verilen dosyada yer alan bilgiler dahilinde dikkate alınmıştır.
+Buna göre, müteveffanın gelir durumunu belirten herhangi bir belge bulunmamış olup, yapılan destekten yoksun kalma hesaplamasında asgari ücret kullanılmıştır.
+
+## Kullanılan yaşam tablosu ve muhtemel yaşam süresi
+Tazminat hesaplamasında TRH 2020 K/E yaşam tablosu ile %0 teknik faiz ile progresif rant yöntemine göre hesaplama yapılmıştır.
+
+
+```{r echo=FALSE}
+
+str_glue("Kaza tarihi itibariyle müteveffa {Ad_Soyad} (Doğum tarihi: {Dogum_Tarihi}) {muteveffa_yas} yaşındadır. TRH 2010 K/E Yaşam Tablosuna göre {muteveffa_yas} yaşındaki bir kişinin ({Cinsiyet}) muhtemel yaşam süresi {muteveffa_beklenen_omur} yıldır.")
+
+if (Es == "Var") {
+    str_glue("Destekten yoksun kalan {Es_Ad} (Doğum tarihi: {Es_Dogum_T.}) bilirkişi hesap tarihi itibariyle {Yas_es} yaşındadır. TRH 2010 K/E Yaşam Tablosuna göre muhtemel yaşam süresi {es_beklenen_omur} yıldır. ") } else {str_glue(" ")} 
+
+       
+if (Anne == "Var") {
+    str_glue("Destekten yoksun kalan {Anne_Ad} (Doğum tarihi: {Anne_Dogum_T.}) bilirkişi hesap tarihi itibariyle {Yas_anne} yaşındadır. TRH 2010 K/E Yaşam Tablosuna göre muhtemel yaşam süresi {anne_beklenen_omur} yıldır. ") } else {str_glue(" ")} 
+
+if (Baba == "Var") {
+    str_glue("Destekten yoksun kalan {Baba_Ad} (Doğum tarihi: {Baba_Dogum_T.}) bilirkişi hesap tarihi itibariyle {Yas_baba} yaşındadır. TRH 2010 K/E Yaşam Tablosuna göre muhtemel yaşam süresi {baba_beklenen_omur} yıldır. ") } else {str_glue(" ")} 
+
+
+knitr::kable(beklenen_omur_tablosu, caption = "Beklenen Ömür Tablosu") 
+
+```
+
+
+## Gelirin paylaştırılması
+Destek payları belirlenirken, Yargıtay Kararları dikkate alınarak paylar belirlenmektedir. Bu kısımda aktüeryal bir hesaplama bulunmamaktadır. Yerleşik kararlar dikkate alındığında ölen kişi için 2 pay, eşi var ise 2 pay, çocukları var ise her bir çocuğa 1’er pay, anne ve baba var ise de bunlar içinde her birine 1’er pay olacak şekilde paylaştırma yapılmaktadır. Destek sürelerinin bitiminde diğer bir ifadeyle destek alanların destekten çıktıkları her bir dönemde pay hesabı tekrar yapılmakta ve destek alanın pay oranı buna göre destekten çıkanlar ile tekrar revize edilmektedir.
+
+Bu itibarla, yukarıda anılan prensip kapsamında destek hesabı başlangıcı için dikkate alınan pay oranları aşağıdaki tabloda gösterilmiştir. 
+
+```{r echo=FALSE}
+
+knitr::kable(destek_alan_pay_tablosu, caption = "Destek Alan Kişiler Pay Tablosu")
+
+```
+
+
+
+# Tazminat Hesaplaması
+
+Yargıtay kararları çerçevesinde hesaplanacak tazminat tutarı kaza tarihi ile bilirkişi rapor tarihi arasında bilinen dönem hesaplaması ve rapor tarihi ile desteğin sonlanacağı tarih arasında bilinmeyen dönem hesaplamasını içermektedir. 
+
+
+## Bilinen Dönem (İşlemiş Dönem) Tazminat Hesaplaması
+
+
+```{r echo=FALSE}
+
+str_glue("Kaza tarihi ile hesaplama tarihi arasında bilinen dönem için yapılan hesaplamaya göre destek alan kişi/kişiler için hesaplanan tazminat tutarı aşağıdaki tabloda gösterilmiştir.
+Bu dönem için toplam {toplam_bilinen_donem_tazminatı_formatted} TL tazminat hesaplanmıştır.")
+
+```
+
+
+```{r echo=FALSE}
+
+knitr::kable(Bilinen_Donem_Tablosu, caption = "Bilinen_Donem_Tablosu_1")
+
+knitr::kable(Bilinen_Donem_Tablosu_destek, caption = "Bilinen_Donem_Tablosu_2")
+
+```
+
+## Bilinmeyen (İşleyecek) Dönem Tazminat Hesaplaması
+
+
+```{r echo=FALSE}
+
+str_glue("Bilinmeyen dönem hesaplaması iş bu rapor tarihinden destekten yoksun kalma tazminatının sonlanacağı kadar olan dönemden oluşmaktadır.
+Bu dönem için toplam {toplam_bilinmeyen_donem_tazminatı_formatted} TL tazminat hesaplanmıştır.")
+
+```
+
+
+```{r echo=FALSE}
+
+
+knitr::kable(Bilinmeyen_Donem_Tablosu , caption = "Bilinmeyen_Donem_Tablosu_1")
+
+knitr::kable(Bilinmeyen_Donem_Tablosu_destek, caption = "Bilinmeyen_Donem_Tablosu_2")
+
+```
+
+
+
+## Toplam Tazminat Tutarı 
+
+
+```{r echo=FALSE}
+
+str_glue("Gerçekleşen kazada vefat eden {Ad_Soyad}'ın desteğinden yoksun kalan kişiler için destekten yoksun kalma tazminatı bilinen dönem ve bilinmeyen dönem tazminatıları ve toplam tazminatı aşağıdaki tabloda gösterilmektedir.")
+
+```
+
+```{r echo=FALSE}
+
+knitr::kable(Toplam_Tazminat_tbl, caption = "Toplam Tazminat Tablosu") 
+
+```
+
+```{r echo=FALSE} 
+
+str_glue("Ancak, kaza tarihde geçerli trafik sigortası poliçe teminat limiti kişi başına {kaza_tarihi_teminat_limiti} TL’dir. Hesaplanan toplam tazminat poliçe teminat limitinden yüksek olduğu için destekten yoksun kalanların tazminatları da poliçe limitine uygun olarak tekrar oransal olarak paylaştırılmış ve aşağıdaki tabloda detaylandırılmıştır.")
+
+```
+
+
+```{r echo=FALSE}
+
+knitr::kable(Toplam_Tazminat_son, caption = "Paylaştırılmış Toplam Tazminat")
+
+```
+
+
+# SONUÇ
+
+
+```{r echo=FALSE}
+
+str_glue("Sayın Hakemliğinizce tarafımıza teslim edilen dosya içerisindeki belge ve bilgiler kullanılarak hazırlanan ve yukarıda detayları verilen destekten yoksun kalma tazminat hesaplamasında; gerçekleşen kazada vefat eden {Ad_Soyad}'ın desteğinden yoksun kalan kişiler için hesaplanan tazminat tutarları aşağıdadır.")
+
+```
+
+
+```{r echo=FALSE}
+
+knitr::kable(Toplam_Tazminat_son_isimli, caption = "Tazminat Tablosu")
+
+```
+
+
+
+Konuya ilişkin Raporumu saygı ile takdirlerinize arz ederim.  
+

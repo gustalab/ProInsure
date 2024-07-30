@@ -100,7 +100,10 @@ source("../ProInsure/modules/module_login.R")
 
 # Define the path to the CSV file where data will be stored
 data_file <- "data/proinsure_data.csv"
+# data_file <- "https://github.com/gustalab/ProInsure/blob/main/data/proinsure_data.csv"
 
+# data/proinsure_data.csv
+# https://github.com/gustalab/ProInsure/blob/3f446243e551f63ab8076616b71bcf3fd1353fc0/data/proinsure_data.csv
 # Ensure the directory exists
 if (!dir.exists("data")) {
   dir.create("data")
@@ -493,21 +496,21 @@ server <- function(input, output,session) {
         )
         file.rename(res, file)
         
-      } else {
+      } else if (input$rapor == "Destek") {
         
         res <- rmarkdown::render(
-          "Report_Template_Vefat_Shiny.Rmd",
+          "destek_hesap.Rmd",
           params = list(
             # draw_plot = draw_plot,
             PDosya_No = input$dosya,
             PAd_Soyad = input$isim,
             PCinsiyet = input$cinsiyet,
-            PKusur_Oranı = input$kusur,
+            PKusur_Orani = input$kusur,
             PKaza_Tarihi = input$kazatarihi,
             PDogum_Tarihi = input$dogumtarihi,
-            PKısmi_Odeme_Sayisi = input$kısmiodeme,
-            PKısmi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
-            PKısmi_Odeme_Tutarı_1 = input$ko1,
+            PKismi_Odeme_Sayisi = input$kısmiodeme,
+            PKismi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
+            PKismi_Odeme_Tutari_1 = input$ko1,
             PGelir = input$asgari_durum,
             PYasam_Tablosu = input$tablo2,
             PEs = input$es,
@@ -530,6 +533,47 @@ server <- function(input, output,session) {
             PCocuk4_Ad = input$cocuk4_isim,
             PCocuk5_DT = input$cocukdogumtarihi55,
             PCocuk5_Ad = input$cocuk5_isim
+          )
+        )
+        file.rename(res, file)
+        
+      } else  {
+        
+        res <- rmarkdown::render(
+          "destek_hesap.Rmd",
+          params = list(
+            # draw_plot = draw_plot,
+            # PDosya_No = input$dosya,
+            # PAd_Soyad = input$isim,
+            # PCinsiyet = input$cinsiyet,
+            # PKusur_Oranı = input$kusur,
+            # PKaza_Tarihi = input$kazatarihi,
+            # PDogum_Tarihi = input$dogumtarihi,
+            # PKısmi_Odeme_Sayisi = input$kısmiodeme,
+            # PKısmi_Odeme_Tarihi_1 = input$kısmiodemetarihi1,
+            # PKısmi_Odeme_Tutarı_1 = input$ko1,
+            # PGelir = input$asgari_durum,
+            PYasam_Tablosu = input$tablo2
+            # PEs = input$es,
+            # PEsAd = input$es_isim,
+            # PEsDT = input$esdogumtarihi,
+            # PAnne = input$anne,
+            # PAnneAd = input$anne_isim,
+            # PAnneDT = input$annedogumtarihi,
+            # PBaba = input$baba,
+            # PBabaAd = input$baba_isim,
+            # PBabaDT = input$babadogumtarihi,
+            # PCocuksay = input$cocuksay,
+            # PCocuk1_DT = input$cocukdogumtarihi11,
+            # PCocuk1_Ad = input$cocuk1_isim,
+            # PCocuk2_DT = input$cocukdogumtarihi22,
+            # PCocuk2_Ad = input$cocuk2_isim,
+            # PCocuk3_DT = input$cocukdogumtarihi33,
+            # PCocuk3_Ad = input$cocuk3_isim,
+            # PCocuk4_DT = input$cocukdogumtarihi44,
+            # PCocuk4_Ad = input$cocuk4_isim,
+            # PCocuk5_DT = input$cocukdogumtarihi55,
+            # PCocuk5_Ad = input$cocuk5_isim
           )
         )
         file.rename(res, file)
@@ -984,6 +1028,38 @@ server <- function(input, output,session) {
     content = function(file) {write_xlsx(sliderValues(), path = file)}
   )
   
+  #### Stats Table ----
+  
+  values <- reactiveValues(data = load_data(data_file))
+  start_time <- Sys.time()
+  correct_password <- "12345"  # Change to your desired password
+  show_table <- reactiveVal(FALSE)
+  
+  observeEvent(input$submit, {
+    if (input$password == correct_password) {
+      new_record <- data.frame(
+        ID = generate_id(),
+        Text1 = input$text1,
+        Text2 = input$text2,
+        SliderValue = input$slider1,
+        Checkbox1 = input$checkbox1,
+        Checkbox2 = input$checkbox2,
+        Duration = as.numeric(difftime(Sys.time(), start_time, units = "mins")),
+        stringsAsFactors = FALSE
+      )
+      values$data <- rbind(values$data, new_record)
+      save_data(values$data, data_file)
+      show_table(TRUE)
+      showNotification("Data submitted successfully!", type = "message")
+    } else {
+      showNotification("Incorrect password. Data not submitted.", type = "error")
+    }
+  })
+  
+  output$dataTable <- renderDT({ datatable(values$data) })
+  output$showTable <- reactive({ show_table() })
+  outputOptions(output, "showTable", suspendWhenHidden = FALSE)
+  
   
   
   ### 4.2.4 RENDER UI ----
@@ -1082,7 +1158,7 @@ server <- function(input, output,session) {
         br(),
         hr()
         
-        
+
       ), # dashboard sidebar end
       
       ##### dashboard body----
@@ -1393,7 +1469,7 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.es == 'Var'",
                             
-                            textInput(inputId = "es_isim",label = "Eş Ad-Soyad", width = 250),
+                            textInput(inputId = "es_isim",label = "Eş Ad-Soyad", width = 250, value = ""),
                             
                             dropdownButton(label = "Eş Doğum Tarihi",
                                            
@@ -1417,7 +1493,7 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.anne == 'Var'",
                             
-                            textInput(inputId = "anne_isim",label = "Anne Ad-Soyad", width = 250),
+                            textInput(inputId = "anne_isim",label = "Anne Ad-Soyad", width = 250, value = ""),
                             
                             dropdownButton(label = "Anne Doğum Tarihi",
                                            
@@ -1441,7 +1517,7 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.baba == 'Var'",
                             
-                            textInput(inputId = "baba_isim",label = "Baba Ad-Soyad", width = 250),
+                            textInput(inputId = "baba_isim",label = "Baba Ad-Soyad", width = 250, value = ""),
                             
                             
                             dropdownButton(label = "Baba Doğum Tarihi",
@@ -1468,7 +1544,7 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.cocuk1 == 'Var'",
                             
-                            textInput(inputId = "cocuk1_isim",label = "1.Çocuk Ad-Soyad", width = 250),
+                            textInput(inputId = "cocuk1_isim",label = "1.Çocuk Ad-Soyad", width = 250, value = ""),
                             
                             
                             dropdownButton(label = "1. Çocuk Doğum Tarihi",
@@ -1476,7 +1552,7 @@ server <- function(input, output,session) {
                                            div( id = "1",
                                                 wellPanel(
                                                   p(tags$b("Doğum Tarihi")),
-                                                  dateInput("cocukdogumtarihi11", label = NULL)
+                                                  dateInput("cocukdogumtarihi11", label = NULL, value = Sys.Date())
                                                 )
                                            ),
                                            circle =FALSE, status = "danger",
@@ -1492,7 +1568,7 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.cocuk2 == 'Var'",
                             
-                            textInput(inputId = "cocuk2_isim",label = "2.Çocuk Ad-Soyad", width = 250),
+                            textInput(inputId = "cocuk2_isim",label = "2.Çocuk Ad-Soyad", width = 250, value = ""),
                             
                             
                             dropdownButton(label = "2. Çocuk Doğum Tarihi",
@@ -1500,7 +1576,7 @@ server <- function(input, output,session) {
                                            div( id = "2",
                                                 wellPanel(
                                                   p(tags$b("Doğum Tarihi")),
-                                                  dateInput("cocukdogumtarihi22", label = NULL)
+                                                  dateInput("cocukdogumtarihi22", label = NULL, value = Sys.Date())
                                                 )
                                            ),
                                            circle =FALSE, status = "danger",
@@ -1515,14 +1591,14 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.cocuk3 == 'Var'",
                             
-                            textInput(inputId = "cocuk3_isim",label = "3.Çocuk Ad-Soyad", width = 250),
+                            textInput(inputId = "cocuk3_isim",label = "3.Çocuk Ad-Soyad", width = 250, value = ""),
                             
                             dropdownButton(label = "3. Çocuk Doğum Tarihi",
                                            
                                            div( id = "3",
                                                 wellPanel(
                                                   p(tags$b("Doğum Tarihi")),
-                                                  dateInput("cocukdogumtarihi33", label = NULL)
+                                                  dateInput("cocukdogumtarihi33", label = NULL, value = Sys.Date())
                                                 )
                                            ),
                                            circle =FALSE, status = "danger",
@@ -1538,14 +1614,14 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.cocuk4 == 'Var'",
                             
-                            textInput(inputId = "cocuk4_isim",label = "4.Çocuk Ad-Soyad", width = 250),
+                            textInput(inputId = "cocuk4_isim",label = "4.Çocuk Ad-Soyad", width = 250, value = ""),
                             
                             dropdownButton(label = "4. Çocuk Doğum Tarihi",
                                            
                                            div( id = "4",
                                                 wellPanel(
                                                   p(tags$b("Doğum Tarihi")),
-                                                  dateInput("cocukdogumtarihi44", label = NULL)
+                                                  dateInput("cocukdogumtarihi44", label = NULL, value = Sys.Date())
                                                 )
                                            ),
                                            circle =FALSE, status = "danger",
@@ -1561,14 +1637,14 @@ server <- function(input, output,session) {
                           conditionalPanel(
                             condition = "input.cocuk5 == 'Var'",
                             
-                            textInput(inputId = "cocuk5_isim",label = "5.Çocuk Ad-Soyad", width = 250),
+                            textInput(inputId = "cocuk5_isim",label = "5.Çocuk Ad-Soyad", width = 250, value = ""),
                             
                             dropdownButton(label = "5. Çocuk Doğum Tarihi",
                                            
                                            div( id = "5",
                                                 wellPanel(
                                                   p(tags$b("Doğum Tarihi")),
-                                                  dateInput("cocukdogumtarihi55", label = NULL)
+                                                  dateInput("cocukdogumtarihi55", label = NULL, value = Sys.Date())
                                                 )
                                            ),
                                            circle =FALSE, status = "danger",
@@ -1705,8 +1781,15 @@ server <- function(input, output,session) {
             )
             
           ) # sonuclar div end 
-        )
-      )  # dashboard body end 
+        ),
+        
+        passwordInput("password", "Enter Password"),
+        conditionalPanel(condition = "output.showTable == true", DTOutput("dataTable"))
+        
+      ),  # dashboard body end
+      
+      
+
       
     ) # dashboard page end 
     
