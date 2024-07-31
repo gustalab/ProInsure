@@ -241,7 +241,7 @@ server <- function(input, output,session) {
   
   # Observe event for the submit button
   
-  ## NOT: Burada data save durumunu Submit butonuna bağlaandı. Action button türünde olduğu için. Generate Report butonu downloadbutton türünde olduğu için trigger edemedim. Yapılabilirse Submit butonu kaldırılıp direk generate_report üzerinden save edilebilir.
+  ## NOT: Burada data save durumunu Submit butonuna bağlandı. Action button türünde olduğu için. Generate Report butonu downloadbutton türünde olduğu için trigger edemedim. Yapılabilirse Submit butonu kaldırılıp direk generate_report üzerinden save edilebilir.
   observeEvent(input$submit, {
   # observeEvent(input$generate_report, {  
     # Calculate duration in minutes
@@ -1076,7 +1076,10 @@ server <- function(input, output,session) {
       ##### dashboard header ----
       
       dashboardHeader(
-        title = tags$span("PROINSURE", style = "color: #ffffff;")
+
+        # title = tags$span("PROINSURE", style = "color: #ffffff;")
+        # title = p("PROINSURE",style = "font-weight: solid; color: white;")
+        title = ("PROINSURE")
       ), 
       
       ##### dashboard sidebar ----
@@ -1172,6 +1175,7 @@ server <- function(input, output,session) {
           tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
         ),
         
+
         
         
         fluidRow(
@@ -1782,9 +1786,9 @@ server <- function(input, output,session) {
             
           ) # sonuclar div end 
         ),
-        
+        tags$style(HTML("label[for='password'] { color: grey; }")),  # Inline CSS for label
         passwordInput("password", "Enter Password"),
-        conditionalPanel(condition = "output.showTable == true", DTOutput("dataTable"))
+        conditionalPanel(condition = "input.password == '12345'", DTOutput("dataTable"))
         
       ),  # dashboard body end
       
