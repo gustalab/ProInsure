@@ -90,7 +90,6 @@ Sys.setlocale(locale = "Turkish")
 
 # 2.0 LOAD SOURCES & DATA ----
 
-Sys.setlocale(locale = "Turkish")
 
 source("../ProInsure/modules/module_login.R")
 

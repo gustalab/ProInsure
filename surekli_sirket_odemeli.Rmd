@@ -807,7 +807,7 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   
     Sirket_Odeme_Tablosu_9faiz <- tibble(
     "Ödeme Tarihi" = as.character(format(ymd(Kısmi_Odeme_Tarihi_1),"%d/%m/%Y")), 
-    "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")),
+    "Hesaplama Tarihi" = as.character(format(dmy("30.05.2024"),"%d/%m/%Y")),
     "Geçen Gün Sayısı" = odeme1_gecen_gun_9faiz,
     "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1},
     "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1),
