@@ -104,6 +104,7 @@ Teminat_Limit_Tablosu <- read_excel("../ProInsure/data/Teminat_Limit_Tablosu_rvz
   Teknik_Faiz <- 0
   pasif_donem_yas <- 60
   faiz_oranı <- 9
+  faiz_oranı2 <- 24
   
   # Kişisel Bilgiler ----
 
@@ -378,14 +379,29 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   Maluliyet_Donemi_tazminat_hesaplama <- Maluliyet_Donemi_tablosu %>% 
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>% 
-    mutate(Kazanilan_Ay = signif(as.numeric(time_length(Donem_Sonu - Donem_Baslangici, "day")/30) , digits = 2)) %>%
+    
+    
+    mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
     
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~ round(Kazanilan_Ay, digits = 0),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
       TRUE ~ Kazanilan_Ay)) %>%
+    
+    
+    
+    # 
+    # mutate(Kazanilan_Ay = signif(as.numeric(time_length(Donem_Sonu - Donem_Baslangici, "day")/30) , digits = 2)) %>%
+    # 
+    # mutate(Kazanilan_Ay = case_when(
+    #   Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    #   Kazanilan_Ay >= 5.9 ~ round(Kazanilan_Ay, digits = 0),
+    #   Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   TRUE ~ Kazanilan_Ay)) %>%
     
     mutate(Maluliyet_Oranı = 100) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
@@ -425,14 +441,28 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
     
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>%
-    mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    
+    
+    mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
     
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      TRUE ~ Kazanilan_Ay)) %>% 
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      TRUE ~ Kazanilan_Ay)) %>%
+    
+    
+    
+    # mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    # 
+    # mutate(Kazanilan_Ay = case_when(
+    #   Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    #   Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   TRUE ~ Kazanilan_Ay)) %>% 
     
     mutate(Maluliyet_Oranı = Maluliyet_Oranı) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
@@ -597,14 +627,30 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   HT_Maluliyet_Donemi_tazminat_hesaplama <- HT_Maluliyet_Donemi_tablosu %>% 
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>% 
-    mutate(Kazanilan_Ay = signif(as.numeric(time_length(Donem_Sonu - Donem_Baslangici, "day")/30) , digits = 2)) %>%
+    
+    
+    
+    mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
     
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~ round(Kazanilan_Ay, digits = 0),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
       TRUE ~ Kazanilan_Ay)) %>%
+    
+    
+    
+    # 
+    # mutate(Kazanilan_Ay = signif(as.numeric(time_length(Donem_Sonu - Donem_Baslangici, "day")/30) , digits = 2)) %>%
+    # 
+    # mutate(Kazanilan_Ay = case_when(
+    #   Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    #   Kazanilan_Ay >= 5.9 ~ round(Kazanilan_Ay, digits = 0),
+    #   Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   TRUE ~ Kazanilan_Ay)) %>%
     
     mutate(Maluliyet_Oranı = 100) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
@@ -646,14 +692,31 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
     
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>%
-    mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    
+    
+    
+    mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
     
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1, f = ceiling),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      TRUE ~ Kazanilan_Ay)) %>% 
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      TRUE ~ Kazanilan_Ay)) %>%
+    
+    
+    
+    
+    # 
+    # mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    # 
+    # mutate(Kazanilan_Ay = case_when(
+    #   Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    #   Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1, f = ceiling),
+    #   Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    #   TRUE ~ Kazanilan_Ay)) %>% 
     
     mutate(Maluliyet_Oranı = Maluliyet_Oranı) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
@@ -764,42 +827,125 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   
 ```
 
+
+
+<!-- ```{r echo=FALSE, include=FALSE} -->
+
+<!--   ## 5.4 Şirket Ödemesinin Hesap Tarihli Değeri ---- -->
+
+<!--   ### ŞİRKET ÖDEMELERİ  -->
+
+<!--   odeme1_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-1`) -->
+<!--   odeme2_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-2`) -->
+
+
+<!--   odeme_hesaplama_degeri_1 <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun / 365)) }) -->
+
+<!--   # odeme_hesaplama_degeri_2 <- as.numeric(if (Kısmi_Odeme_Tutarı_2 == "none") {0} else {Kısmi_Odeme_Tutarı_2 * (1 + (faiz_oranı/100)*(odeme2_gecen_gun / 365)) }) -->
+
+
+
+<!--   Sirket_Odeme_Tablosu_1 <- tibble( -->
+<!--     "Ödeme Tarihi" = Kısmi_Odeme_Tarihi_1, -->
+<!--     "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")), -->
+<!--     "Geçen Gün Sayısı" = odeme1_gecen_gun, -->
+<!--     "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1}, -->
+<!--     "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1), -->
+<!--     "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_1 -->
+<!--   ) -->
+
+<!--   # Sirket_Odeme_Tablosu_2 <- tibble( -->
+<!--   #   "Ödeme Tarihi" = Kısmi_Odeme_Tarihi_2, -->
+<!--   #   "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")), -->
+<!--   #   "Geçen Gün Sayısı" = odeme2_gecen_gun, -->
+<!--   #   "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_2 == 0) {0} else {Kısmi_Odeme_Tutarı_2}, -->
+<!--   #   "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1), -->
+<!--   #   "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_2 -->
+<!--   # ) -->
+
+
+<!--   Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_1) %>%  -->
+<!--     filter(`Ödenen Tutar` != 0) -->
+
+<!--   if (Kısmi_Odeme_Sayısı >= 1) { -->
+<!--     knitr::kable(Sirket_Odeme_Tablosu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")} -->
+
+
+<!--   # toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1 + odeme_hesaplama_degeri_2, digits = 2) -->
+
+<!--   toplam_kismi_odeme <- sum(Sirket_Odeme_Tablosu$`Hesap Tarihi Tutarı`) -->
+
+<!--   toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "") -->
+
+
+
+<!--   if (Kısmi_Odeme_Sayısı >=1) { -->
+<!--     str_glue("Toplam Kısmi Ödeme: {toplam_kismi_odeme} TL") } else {str_glue(" ")} -->
+
+<!-- ``` -->
+
+
+
+
+
+
 ```{r echo=FALSE, include=FALSE}
 
   ## 5.4 Şirket Ödemesinin Hesap Tarihli Değeri ----
   
   ### ŞİRKET ÖDEMELERİ 
   
-  odeme1_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-1`)
-  odeme2_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-2`)
-  
-  
-  odeme_hesaplama_degeri_1 <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun / 365)) })
-  
-  # odeme_hesaplama_degeri_2 <- as.numeric(if (Kısmi_Odeme_Tutarı_2 == "none") {0} else {Kısmi_Odeme_Tutarı_2 * (1 + (faiz_oranı/100)*(odeme2_gecen_gun / 365)) })
-  
+  odeme1_gecen_gun_9faiz <- as.numeric(as.Date(dmy("01.06.2024")) - parametre_tablosu2$`Ödeme Tarihi-1`)
 
+  odeme1_gecen_gun_24faiz <- as.numeric(as.Date(Hesap_Tarihi) - as.Date(dmy("01.06.2024")))
   
-  Sirket_Odeme_Tablosu_1 <- tibble(
-    "Ödeme Tarihi" = Kısmi_Odeme_Tarihi_1,
-    "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")),
-    "Geçen Gün Sayısı" = odeme1_gecen_gun,
+  #
+
+
+  odeme_hesaplama_degeri_9faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
+
+    0
+    }else {
+
+    Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun_9faiz / 365))
+
+    })
+  
+  #
+  
+  odeme_hesaplama_degeri_24faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
+
+    0
+    }else {
+
+    odeme_hesaplama_degeri_9faiz * (1 + (faiz_oranı2/100)*(odeme1_gecen_gun_24faiz / 365))
+
+    })
+  
+  
+    Sirket_Odeme_Tablosu_9faiz <- tibble(
+    "Ödeme Tarihi" = as.character(format(ymd(Kısmi_Odeme_Tarihi_1),"%d/%m/%Y")), 
+    "Hesaplama Tarihi" = as.character(format(dmy("30.05.2024"),"%d/%m/%Y")),
+    "Geçen Gün Sayısı" = odeme1_gecen_gun_9faiz,
     "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1},
     "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1),
-    "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_1
+    "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_9faiz
   )
-  
-  # Sirket_Odeme_Tablosu_2 <- tibble(
-  #   "Ödeme Tarihi" = Kısmi_Odeme_Tarihi_2,
-  #   "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")),
-  #   "Geçen Gün Sayısı" = odeme2_gecen_gun,
-  #   "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_2 == 0) {0} else {Kısmi_Odeme_Tutarı_2},
-  #   "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1),
-  #   "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_2
-  # )
-  
-  
-  Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_1) %>% 
+    
+    Sirket_Odeme_Tablosu_24faiz <- tibble(
+    "Ödeme Tarihi" = as.character(format(dmy("01.06.2024"),"%d/%m/%Y")), 
+    "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")),
+    "Geçen Gün Sayısı" = odeme1_gecen_gun_24faiz,
+    "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {odeme_hesaplama_degeri_9faiz},
+    "Faiz Oranı" = scales::percent(faiz_oranı2, scale = 1),
+    "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_24faiz
+  )
+    
+    
+    
+    
+  Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_9faiz, Sirket_Odeme_Tablosu_24faiz) %>% 
+    
     filter(`Ödenen Tutar` != 0)
   
   if (Kısmi_Odeme_Sayısı >= 1) {
@@ -818,6 +964,10 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
     str_glue("Toplam Kısmi Ödeme: {toplam_kismi_odeme} TL") } else {str_glue(" ")}
 
 ```
+
+
+
+
 
 ```{r echo=FALSE, include=FALSE}
 
@@ -1149,18 +1299,21 @@ str_glue("Hesaplanan toplam sürekli maluliyet tazminatının kaza tarihi itibar
 
 ```{r echo=FALSE}
 
-Sirket_Odeme_Tablosu <- Sirket_Odeme_Tablosu_1 %>% 
+# Sirket_Odeme_Tablosu <- Sirket_Odeme_Tablosu_1 %>% 
+#   filter(`Ödenen Tutar` != 0)
+
+Sirket_Odeme_Tablosuu <- Sirket_Odeme_Tablosu %>% 
   filter(`Ödenen Tutar` != 0)
   
 if (Kısmi_Odeme_Sayısı >= 1) {
-  knitr::kable(Sirket_Odeme_Tablosu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")}
+  knitr::kable(Sirket_Odeme_Tablosuu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")}
 
 ```
 
 
 ```{r echo=FALSE}
 
-toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1, digits = 2)
+# toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1, digits = 2)
   
 toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
   
