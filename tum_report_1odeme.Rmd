@@ -954,7 +954,9 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   
   # toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1 + odeme_hesaplama_degeri_2, digits = 2)
   
-  toplam_kismi_odeme <- sum(Sirket_Odeme_Tablosu$`Hesap Tarihi Tutarı`)
+  # toplam_kismi_odeme <- sum(Sirket_Odeme_Tablosu$`Hesap Tarihi Tutarı`)
+  
+  toplam_kismi_odeme <- Sirket_Odeme_Tablosu[2,6]
   
   toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
   
