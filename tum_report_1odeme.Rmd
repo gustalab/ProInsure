@@ -895,6 +895,15 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   
   ### ŞİRKET ÖDEMELERİ 
   
+  # odeme1_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-1`)
+  # odeme2_gecen_gun <- as.numeric(Hesap_Tarihi - parametre_tablosu2$`Ödeme Tarihi-2`)
+  # 
+  # 
+  # odeme_hesaplama_degeri_1 <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun / 365)) })
+  
+  # odeme_hesaplama_degeri_2 <- as.numeric(if (Kısmi_Odeme_Tutarı_2 == "none") {0} else {Kısmi_Odeme_Tutarı_2 * (1 + (faiz_oranı/100)*(odeme2_gecen_gun / 365)) })
+  
+
   odeme1_gecen_gun_9faiz <- as.numeric(as.Date(dmy("01.06.2024")) - parametre_tablosu2$`Ödeme Tarihi-1`)
 
   odeme1_gecen_gun_24faiz <- as.numeric(as.Date(Hesap_Tarihi) - as.Date(dmy("01.06.2024")))
@@ -902,61 +911,70 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   #
 
 
-  odeme_hesaplama_degeri_9faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
+  donemde_elde_edilen_faiz9 <- (faiz_oranı/100) * (odeme1_gecen_gun_9faiz/365)
+  donemde_elde_edilen_faiz24 <- (faiz_oranı2/100) * (odeme1_gecen_gun_24faiz/365)
 
-    0
-    }else {
-
-    Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun_9faiz / 365))
-
-    })
-  
-  #
-  
-  odeme_hesaplama_degeri_24faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
-
-    0
-    }else {
-
-    odeme_hesaplama_degeri_9faiz * (1 + (faiz_oranı2/100)*(odeme1_gecen_gun_24faiz / 365))
-
-    })
+  # odeme_hesaplama_degeri_9faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
+  # 
+  #   0
+  #   }else {
+  # 
+  #   Kısmi_Odeme_Tutarı_1 * (1 + (faiz_oranı/100)*(odeme1_gecen_gun_9faiz / 365))
+  # 
+  #   })
+  # 
+  # #
+  # 
+  # odeme_hesaplama_degeri_24faiz <- as.numeric(if (Kısmi_Odeme_Tutarı_1 == "none") {
+  # 
+  #   0
+  #   }else {
+  # 
+  #   odeme_hesaplama_degeri_9faiz * (1 + (faiz_oranı2/100)*(odeme1_gecen_gun_24faiz / 365))
+  # 
+  #   })
   
   
     Sirket_Odeme_Tablosu_9faiz <- tibble(
     "Ödeme Tarihi" = as.character(format(ymd(Kısmi_Odeme_Tarihi_1),"%d/%m/%Y")), 
     "Hesaplama Tarihi" = as.character(format(dmy("30.05.2024"),"%d/%m/%Y")),
     "Geçen Gün Sayısı" = odeme1_gecen_gun_9faiz,
-    "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1},
+    # "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1},
     "Faiz Oranı" = scales::percent(faiz_oranı, scale = 1),
-    "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_9faiz
+    "Donemde Elde Edilen Faiz" = scales::percent(donemde_elde_edilen_faiz9, accuracy = 0.0001)
   )
     
     Sirket_Odeme_Tablosu_24faiz <- tibble(
     "Ödeme Tarihi" = as.character(format(dmy("01.06.2024"),"%d/%m/%Y")), 
     "Hesaplama Tarihi" = as.character(format(ymd(Hesap_Tarihi),"%d/%m/%Y")),
     "Geçen Gün Sayısı" = odeme1_gecen_gun_24faiz,
-    "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {odeme_hesaplama_degeri_9faiz},
+    # "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {odeme_hesaplama_degeri_9faiz},
+    # "Ödenen Tutar" = if (Kısmi_Odeme_Tutarı_1 == "none") {0} else {Kısmi_Odeme_Tutarı_1},
     "Faiz Oranı" = scales::percent(faiz_oranı2, scale = 1),
-    "Hesap Tarihi Tutarı" = odeme_hesaplama_degeri_24faiz
+    "Donemde Elde Edilen Faiz" = scales::percent(donemde_elde_edilen_faiz24, accuracy = 0.0001)
   )
     
     
     
     
-  Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_9faiz, Sirket_Odeme_Tablosu_24faiz) %>% 
+  # Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_1) %>% 
+  #   filter(`Ödenen Tutar` != 0)
+  
+    # Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_9faiz, Sirket_Odeme_Tablosu_24faiz) %>% 
+    # filter(`Ödenen Tutar` != 0)
     
-    filter(`Ödenen Tutar` != 0)
+    Sirket_Odeme_Tablosu <- bind_rows(Sirket_Odeme_Tablosu_9faiz, Sirket_Odeme_Tablosu_24faiz)
   
   if (Kısmi_Odeme_Sayısı >= 1) {
     knitr::kable(Sirket_Odeme_Tablosu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")}
   
   
   # toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1 + odeme_hesaplama_degeri_2, digits = 2)
+    
+    
+  toplam_faiz <- donemde_elde_edilen_faiz9 + donemde_elde_edilen_faiz24
   
-  # toplam_kismi_odeme <- sum(Sirket_Odeme_Tablosu$`Hesap Tarihi Tutarı`)
-  
-  toplam_kismi_odeme <- Sirket_Odeme_Tablosu[2,6]
+  toplam_kismi_odeme <- (1+toplam_faiz)*Kısmi_Odeme_Tutarı_1
   
   toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
   
@@ -1301,14 +1319,12 @@ str_glue("Hesaplanan toplam sürekli maluliyet tazminatının kaza tarihi itibar
 
 ```{r echo=FALSE}
 
-# Sirket_Odeme_Tablosu <- Sirket_Odeme_Tablosu_1 %>% 
+# 
+# Sirket_Odeme_Tablosu <- Sirket_Odeme_Tablosu %>% 
 #   filter(`Ödenen Tutar` != 0)
-
-Sirket_Odeme_Tablosuu <- Sirket_Odeme_Tablosu %>% 
-  filter(`Ödenen Tutar` != 0)
   
 if (Kısmi_Odeme_Sayısı >= 1) {
-  knitr::kable(Sirket_Odeme_Tablosuu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")}
+  knitr::kable(Sirket_Odeme_Tablosu, caption = "Şirket Ödeme Tablosu") } else {str_glue("Dosya kapsamında şirket ödemesi görülmemiştir.")}
 
 ```
 
@@ -1316,11 +1332,20 @@ if (Kısmi_Odeme_Sayısı >= 1) {
 ```{r echo=FALSE}
 
 # toplam_kismi_odeme <- round(odeme_hesaplama_degeri_1, digits = 2)
-  
-toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
+
+# toplam_kismi_odeme <- round(odeme_hesaplama_degeri_24faiz, digits = 2)
+# 
+# 
+# toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
+# 
+#   toplam_kismi_odeme <- (1+toplam_faiz)*Kısmi_Odeme_Tutarı_1
+#   
+#   toplam_kismi_odeme <- formattable::currency(toplam_kismi_odeme, digits = 2, format = "f", big.mark = ".",decimal.mark = ",",  symbol = "")
+
+toplam_faiz2 <- scales::percent(toplam_faiz, accuracy = 0.0001)
   
 if (Kısmi_Odeme_Sayısı >=1) {
-  str_glue("Şirket tarafından yapılan ödemenin bilirkişi hesap tarihli değeri {toplam_kismi_odeme} TL olarak hesaplanmıştır.") } else {str_glue(" ")}
+  str_glue("Şirket ödeme tarihinden bilirkişi hesap tarihine kadar geçen süre içinn toplam {toplam_faiz2} faiz hesaplanmıştır. Şirket tarafından yapılan ödemenin bilirkişi hesap tarihli değeri {toplam_kismi_odeme} TL olarak hesaplanmıştır.") } else {str_glue(" ")}
 
 ```
 
