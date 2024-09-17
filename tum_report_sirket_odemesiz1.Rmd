@@ -358,18 +358,22 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
   HT_Maluliyet_Donemi_tablosu$Donem_Baslangic[1] <- as.character(maluliyet_tarihi_baslangıc)
   HT_Maluliyet_Donemi_tablosu$Donem_Son[nrow(HT_Maluliyet_Donemi_tablosu)] <- as.character(maluliyet_tarihi_bitis)
   
-  HT_Maluliyet_Donemi_tazminat_hesaplama <- HT_Maluliyet_Donemi_tablosu %>% 
+HT_Maluliyet_Donemi_tazminat_hesaplama <- HT_Maluliyet_Donemi_tablosu %>% 
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>% 
-    mutate(Kazanilan_Ay = signif(as.numeric(time_length(Donem_Sonu - Donem_Baslangici, "day")/30) , digits = 2)) %>%
     
+     mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
+    
+    # mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    # 
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~ round(Kazanilan_Ay, digits = 0),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
       TRUE ~ Kazanilan_Ay)) %>%
-    
+  
     mutate(Maluliyet_Oranı = 100) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
     select(Gelir_Durumu, Kazanilan_Ay, Donem_Baslangic, Donem_Son, Maluliyet_Oranı, Kusur_Oranı) %>% 
@@ -410,14 +414,18 @@ PR_TRH_2010 <- if ( Yasam_Tablosu == "TRH-2010") {
     
     mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
            Donem_Sonu = as.Date(Donem_Son)) %>%
-    mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
     
+     mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
+    
+    # mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
+    # 
     mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
-      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1, f = ceiling),
-      Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
-      TRUE ~ Kazanilan_Ay)) %>% 
+      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
+      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
+      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
+      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
+      TRUE ~ Kazanilan_Ay)) %>%
     
     mutate(Maluliyet_Oranı = Maluliyet_Oranı) %>% 
     mutate(Kusur_Oranı = Kusur_Oranı) %>% 
