@@ -92,8 +92,8 @@ library(scales)
 
 ```{r  echo=FALSE, include=FALSE}
 
-destek_excel <- read_excel("../ProInsure/data/dosya_bilgiler.xlsx", sheet = "destek")
-destek_excel <- destek_excel |> head(1)
+# destek_excel <- read_excel("../ProInsure/data/dosya_bilgiler.xlsx", sheet = "destek")
+# destek_excel <- destek_excel |> head(1)
 
 
 # Params Bilgiler
