@@ -5,7 +5,7 @@ account: mrgustalab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12237554
-bundleId: 8974849
+bundleId: 9135146
 url: https://mrgustalab.shinyapps.io/ProInsure/
 version: 1
 asMultiple: FALSE
