@@ -21,37 +21,37 @@ output:
   #   fig.align: "left" 
   
 params:
-  PKusur_Orani: NULL
-  PKaza_Tarihi: NULL
-  PDogum_Tarihi: NULL
-  PDosya_No: NULL
-  PAd_Soyad: NULL
-  PCinsiyet: NULL
-  PKismi_Odeme_Sayisi: NULL
-  PKismi_Odeme_Tarihi_1: NULL
-  PKismi_Odeme_Tutari_1: NULL
-  PGelir: NULL
+#   PKusur_Oranı: NULL
+#   PKaza_Tarihi: NULL
+#   PDogum_Tarihi: NULL
+#   PDosya_No: NULL
+#   PAd_Soyad: NULL
+#   PCinsiyet: NULL
+#   PKısmi_Odeme_Sayısı: NULL
+#   PKısmi_Odeme_Tarihi_1: NULL
+#   PKısmi_Odeme_Tutarı_1: NULL
+  # PGelir: NULL
   PYasam_Tablosu: NULL
-  PEs: NULL
-  PEsAd: NULL
-  PEsDT: NULL
-  PAnne: NULL
-  PAnneAd: NULL
-  PAnneDT: NULL
-  PBaba: NULL
-  PBabaAd: NULL
-  PBabaDT: NULL
-  PCocuksay: NULL
-  PCocuk1_DT: NULL
-  PCocuk1_Ad: NULL
-  PCocuk2_DT: NULL
-  PCocuk2_Ad: NULL
-  PCocuk3_DT: NULL
-  PCocuk3_Ad: NULL
-  PCocuk4_DT: NULL
-  PCocuk4_Ad: NULL
-  PCocuk5_DT: NULL
-  PCocuk5_Ad: NULL
+#   PEs: NULL
+#   PEsAd: NULL
+#   PEsDT: NULL
+#   PAnne: NULL
+#   PAnneAd: NULL 
+#   PAnneDT: NULL
+#   PBaba: NULL
+#   PBabaAd: NULL
+#   PBabaDT: NULL
+#   PCocuksay: NULL 
+#   PCocuk1_DT: NULL
+#   PCocuk1_Ad: NULL
+#   PCocuk2_DT: NULL
+#   PCocuk2_Ad: NULL
+#   PCocuk3_DT: NULL
+#   PCocuk3_Ad: NULL
+#   PCocuk4_DT: NULL
+#   PCocuk4_Ad: NULL
+#   PCocuk5_DT: NULL
+#   PCocuk5_Ad: NULL
     
 ---
 
@@ -98,8 +98,10 @@ destek_excel <- destek_excel |> head(1)
 
 # Params Bilgiler
 
-Dosya_No <- params$PDosya_No  
-Yasam_Tablosu <- params$PYasam_Tablosu
+Dosya_No <- destek_excel$Dosya_No  
+# Yasam_Tablosu <- params$PYasam_Tablosu
+Yasam_Tablosu <- "TRH-2010"
+
 
 #---- Hesap Tarihi
 
@@ -109,12 +111,12 @@ hesap_tarihi_yil <- as.numeric(lubridate::year(Hesap_Tarihi))
 
   # Kişisel Bilgiler ----
 
-  Ad_Soyad <- params$PAd_Soyad
-  Cinsiyet <-  params$PCinsiyet                         
-  Dogum_Tarihi <- as.Date(params$PDogum_Tarihi)
-  Gelir_Durumu <- params$PGelir
+  Ad_Soyad <- destek_excel$Ad_Soyad
+  Cinsiyet <- destek_excel$Cinsiyet                         
+  Dogum_Tarihi <- as.Date(destek_excel$Dogum_Tarihi)
+  Gelir_Durumu <- "Bekar"
   # Gelir_Durumu <- "Gelir"                               # Bekar", "evli_cocuksuz", "1cocuk" ,"2cocuk", "3cocuk", "4cocuk", "Gelir"
-  Kaza_Tarihi <- as.Date(params$PKaza_Tarihi)
+  Kaza_Tarihi <- as.Date(destek_excel$Kaza_Tarihi)
 
 
 #----
@@ -184,31 +186,31 @@ Asgari_Tablo <- read_excel("../ProInsure/data/Asgari_Ucret_Tablosu_rvz.xlsx", sh
 
 # Aile Bilgileri ----
 
-Es <- params$PEs
-Es_Ad <- params$PEsAd
-Es_Dogum_T. <- as.Date(params$PEsDT)      
+Es <- destek_excel$Es
+Es_Ad <- destek_excel$EsAd 
+Es_Dogum_T. <- as.Date(destek_excel$EsDT)      
 # 
 
-# Cocuk_durumu <- params$PCocuksay
-# # 
-Cocuk1_Ad <- params$PCocuk1_Ad
-Cocuk1_Dogum_T. <- as.Date(params$PCocuk1_DT)
-Cocuk2_Ad <- params$PCocuk2_Ad
-Cocuk2_Dogum_T. <- as.Date(params$PCocuk2_DT)
-Cocuk3_Ad <- params$PCocuk3_Ad
-Cocuk3_Dogum_T. <- as.Date(params$PCocuk3_DT)
-Cocuk4_Ad <- params$PCocuk4_Ad
-Cocuk4_Dogum_T. <-as.Date(params$PCocuk4_DT)
-Cocuk5_Ad <- params$PCocuk5_Ad
-Cocuk5_Dogum_T. <- as.Date(params$PCocuk5_DT)
-#
-Anne <- params$PAnne
-Anne_Ad <- params$PAnneAd
-Anne_Dogum_T. <- as.Date(params$PAnneDT)
-#
-Baba <- params$PBaba
-Baba_Ad <- params$PBabaAd
-Baba_Dogum_T. <- as.Date(params$PBabaDT)
+Cocuk_durumu <- destek_excel$Cocuksay
+# 
+Cocuk1_Ad <- destek_excel$Cocuk1_Ad
+Cocuk1_Dogum_T. <- destek_excel$Cocuk1_DT
+Cocuk2_Ad <- destek_excel$Cocuk2_Ad
+Cocuk2_Dogum_T. <- as.Date(destek_excel$Cocuk2_DT)
+Cocuk3_Ad <- destek_excel$Cocuk3_Ad
+Cocuk3_Dogum_T. <- as.Date(destek_excel$Cocuk3_DT)
+Cocuk4_Ad <- destek_excel$Cocuk4_Ad
+Cocuk4_Dogum_T. <- as.Date(destek_excel$Cocuk4_DT)
+Cocuk5_Ad <- destek_excel$Cocuk5_Ad
+Cocuk5_Dogum_T. <- as.Date(destek_excel$Cocuk5_DT)
+# 
+Anne <- destek_excel$Anne
+Anne_Ad <- destek_excel$AnneAd
+Anne_Dogum_T. <- as.Date(destek_excel$AnneDT) 
+# 
+Baba <- destek_excel$Baba
+Baba_Ad <- destek_excel$BabaAd
+Baba_Dogum_T. <- as.Date(destek_excel$BabaDT)
 
 
 ```
@@ -223,7 +225,7 @@ destek_alan_bilgiler_tbl <- data.frame(Yakınlık = c("Eş", "Anne", "Baba", "Ç
                                        Dogum_Tarihi = c(Es_Dogum_T., Anne_Dogum_T.,Baba_Dogum_T., Cocuk1_Dogum_T., Cocuk2_Dogum_T.,Cocuk3_Dogum_T., Cocuk4_Dogum_T., Cocuk5_Dogum_T.)
                                        ) 
 
-destek_alan_bilgiler_tablosu <- destek_alan_bilgiler_tbl %>%
+destek_alan_bilgiler_tablosu <- destek_alan_bilgiler_tbl %>% 
   filter(Dogum_Tarihi != Hesap_Tarihi)
 
 # Destek Alan Kişilerin Pay
@@ -234,11 +236,11 @@ destek_alan_pay_tbl <- data.frame(Yakınlık = c("Eş", "Anne", "Baba", "Çocuk1
                                   Pay = c(2, 1, 1, 1, 1, 1, 1, 1)
                                   )
 
-destek_alan_pay_tbl2 <- destek_alan_pay_tbl %>%
-  filter(Dogum_Tarihi != Hesap_Tarihi)
+destek_alan_pay_tbl2 <- destek_alan_pay_tbl %>% 
+  filter(Dogum_Tarihi != Hesap_Tarihi)  
 
-destek_alan_pay_tablosu <- destek_alan_pay_tbl2 %>%
-  mutate(Pay_yuzdesi = round(Pay / (2 + sum(Pay)),digits = 2)) %>%
+destek_alan_pay_tablosu <- destek_alan_pay_tbl2 %>% 
+  mutate(Pay_yuzdesi = round(Pay / (2 + sum(Pay)),digits = 2)) %>% 
   select(-Dogum_Tarihi)
 
 destek_alan_pay_tablosu$Pay_yuzdesi <- scales::percent(destek_alan_pay_tablosu$Pay_yuzdesi,accuracy = 0.1)
@@ -251,9 +253,9 @@ destek_alan_pay_tablosu$Pay_yuzdesi <- scales::percent(destek_alan_pay_tablosu$P
 
 #---- Kaza Bilgileri
 
-Kaza_Tarihi <- as.Date(params$PKaza_Tarihi)   
+Kaza_Tarihi <- as.Date(destek_excel$Kaza_Tarihi)   
 
-Kusur_Orani <- params$PKusur_Orani              
+Kusur_Orani <- destek_excel$Kusur_Oranı              
 
 #
 
@@ -265,10 +267,10 @@ gecen_sure <- as.numeric(hesap_tarihi_yil-kaza_yil)
 
 #---- Şirket Ödeme Bilgileri
 
-Kismi_Odeme_Sayisi <- params$PKismi_Odeme_Sayisi
+Kismi_Odeme_Sayisi <- destek_excel$Kısmi_Odeme_Sayısı
 
-Odeme_Tarihi_1 <- as.Date(params$PKismi_Odeme_Tarihi_1)         
-Odeme_Tutari_1 <- params$PKismi_Odeme_Tutari_1       
+Odeme_Tarihi_1 <- "none"         
+Odeme_Tutari_1 <- "none"        
 
 Odeme_Tarihi_2 <- "none"
 Odeme_Tutari_2 <- "none"
@@ -648,17 +650,15 @@ bilinen_donem_tablosu$Donem_Son[nrow(bilinen_donem_tablosu)] <- hesaplama_tarihi
 bilinen_donem_tazminat_hesaplama <- bilinen_donem_tablosu %>%
   mutate(Donem_Baslangici = as.Date(Donem_Baslangic),
          Donem_Sonu = as.Date(Donem_Son)) %>%
-   mutate(Kazanilan_Ay = round(as.numeric(difftime(as.Date(Donem_Sonu), as.Date(Donem_Baslangici), units = "days")) / 30, 2)) %>%
-    
-    # mutate(Kazanilan_Ay = round(time_length(as.Date(Donem_Sonu) - as.Date(Donem_Baslangici), "month") , digits = 1)) %>%
-    # 
-    mutate(Kazanilan_Ay = case_when(
-      Kazanilan_Ay >= 11.96 ~ plyr::round_any(Kazanilan_Ay, 1),
-      Kazanilan_Ay > 6.1 ~  plyr::round_any(Kazanilan_Ay, 0.1),
-      Kazanilan_Ay >= 5.9 ~  plyr::round_any(Kazanilan_Ay, 1),
-      # Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1),
-      # Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1),
-      TRUE ~ Kazanilan_Ay)) %>%
+  mutate(Kazanilan_Ay = round(time_length(Donem_Sonu - Donem_Baslangici, "month") , digits = 1)) %>%
+
+  mutate(Kazanilan_Ay = case_when(
+    Kazanilan_Ay >= 11.96 ~ round(Kazanilan_Ay, digits = 1),
+    Kazanilan_Ay >= 8 ~  round(Kazanilan_Ay, digits = 1),
+    Kazanilan_Ay >= 5.8 ~  plyr::round_any(Kazanilan_Ay, 1, f = ceiling),
+    Kazanilan_Ay >= 4.6 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = ceiling),
+    Kazanilan_Ay <= 2 ~ plyr::round_any(Kazanilan_Ay, 0.1, f = floor),
+    TRUE ~ Kazanilan_Ay)) %>%
 
   mutate(Kusur_Oranı = Kusur_Orani) %>%
   mutate(Year =  year <- as.numeric(format(D_B,'%Y'))) %>%
@@ -763,6 +763,7 @@ toplam_bilinen_donem_tazminatı <- sum(Bilinen_Donem_Tablosu_destek$Bilinen_Dön
 
 toplam_bilinen_donem_tazminatı_formatted <- format(toplam_bilinen_donem_tazminatı, big.mark = ".", decimal.mark = ",")
 
+Bilinen_Donem_Tablosu_destek
 
 ```
 
@@ -817,6 +818,7 @@ Bilinmeyen_Donem_Tablosu <- cbind(Bilinmeyen_Donem_Tablosu_tazminat_chr, Bilinme
   
 Bilinmeyen_Donem_Tablosu[ , grep("Destek", names(Bilinmeyen_Donem_Tablosu), value = TRUE)] <- Bilinmeyen_Donem_Tablosu[ , grep("Destek", names(Bilinmeyen_Donem_Tablosu), value = TRUE)] * 100
 
+Bilinmeyen_Donem_Tablosu 
 
 ```
 
