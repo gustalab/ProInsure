@@ -757,7 +757,6 @@ if (nrow(Bilinen_Donem_Tablosu_destek) == 1) {
     rownames_to_column("Destek_Alan")
 }
 
-Bilinen_Donem_Tablosu_destek
 
 toplam_bilinen_donem_tazminatı <- sum(Bilinen_Donem_Tablosu_destek$Bilinen_Dönem_Tazminatı)
 
@@ -848,7 +847,6 @@ if (nrow(Bilinmeyen_Donem_Tablosu_destek) == 1) {
     rownames_to_column("Destek_Alan")
 }
 
-Bilinmeyen_Donem_Tablosu_destek
 
 toplam_bilinmeyen_donem_tazminatı <- sum(Bilinmeyen_Donem_Tablosu_destek$Bilinmeyen_Dönem_Tazminatı)
 
